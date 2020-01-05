@@ -7,4 +7,5 @@
     <string name="show_date_picker">Date</string>
     <string name="next_activity_btn">Schedule</string>
     <string name="save_schedule">save schedule</string>
+    <string name="profile_editor">Profile Editor</string>
 </resources>

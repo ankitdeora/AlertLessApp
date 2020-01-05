@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.SchedulerActivity">
+
+    <Button
+        android:id="@+id/showDateTime"
+        android:layout_width="166dp"
+        android:layout_height="43dp"
+        android:layout_marginTop="112dp"
+        android:onClick="showTimePickerDialog"
+        android:text="@string/show_time_picker"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/showDateTime2"
+        android:layout_width="166dp"
+        android:layout_height="43dp"
+        android:layout_marginTop="48dp"
+        android:onClick="showMultipleDatePicker"
+        android:text="@string/show_date_picker"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/showDateTime" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

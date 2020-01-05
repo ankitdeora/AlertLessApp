@@ -23,7 +23,7 @@ import java.util.Calendar;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    public static final String EXTRA_MESSAGE = "com.example.myfirstapp.MESSAGE";
+    public static final String EXTRA_MESSAGE = "com.example.alertless.activities.MainActivity.MESSAGE";
     private UserRepository userRepository;
 
     @Override
@@ -50,54 +50,14 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void schedule(View view) {
-        Intent intent = new Intent(this, DisplayMessageActivity.class);
-        intent.putExtra(EXTRA_MESSAGE, "Schedule here !!!");
-        startActivity(intent);
-    }
-
     public void listAllUsers(View view) throws Exception {
         List<User> usersList = userRepository.getAllUsers();
         ToastUtils.showToast(getApplicationContext(), usersList.toString());
     }
 
-    public void showTimePickerDialog(View v) {
-        DialogFragment timeFragment = new ScheduleTimePicker();
-        timeFragment.show(getSupportFragmentManager(), "timePicker");
-    }
-
-    public void showDatePickerDialog(View v) {
-        DialogFragment dateFragment = new ScheduleDatePicker();
-        dateFragment.show(getSupportFragmentManager(), "datePicker");
-    }
-
-    public void showMultipleDatePicker(View v) {
-        DatePickerBuilder builder = new DatePickerBuilder(this, getSelectDateListener())
-                .setPickerType(CalendarView.MANY_DAYS_PICKER)
-                .setHeaderColor(R.color.colorAccent)
-                .setSelectionColor(R.color.colorAccent)
-                .setTodayColor(R.color.colorAccent);
-
-        DatePicker datePicker = builder.build();
-        datePicker.show();
-    }
-
-    private OnSelectDateListener getSelectDateListener() {
-        return new OnSelectDateListener() {
-            @Override
-            public void onSelect(List<Calendar> calendars) {
-                String msg = "";
-                for (Calendar c : calendars) {
-                    int year = c.get(Calendar.YEAR);
-                    int month = c.get(Calendar.MONTH);
-                    int day = c.get(Calendar.DAY_OF_MONTH);
-
-                    msg += String.format("|%s-%s-%s|", year, month, day);
-                }
-
-                ToastUtils.showToast(getApplicationContext(), msg);
-            }
-        };
+    public void editProfile(View view) throws Exception {
+        Intent intent = new Intent(this, ProfileEditActivity.class);
+        startActivity(intent);
     }
 
 }

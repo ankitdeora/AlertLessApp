@@ -18,13 +18,21 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activities.DisplayMessageActivity"
+        <activity
+            android:name=".activities.DisplayMessageActivity"
             android:parentActivityName=".activities.MainActivity">
+
             <!-- The meta-data tag is required if you support API level 15 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.MainActivity" />
         </activity>
+
+        <activity android:name=".activities.SchedulerActivity"
+            android:parentActivityName=".activities.ProfileEditActivity" />
+
+        <activity android:name=".activities.ProfileEditActivity"
+            android:parentActivityName=".activities.MainActivity"/>
     </application>
 
 </manifest>
