@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Alertless</string>
+    <string name="edit_message">Enter a message</string>
+    <string name="button_send">Send</string>
+    <string name="list_all_button">List Users</string>
+    <string name="show_time_picker">Time</string>
+    <string name="show_date_picker">Date</string>
+    <string name="next_activity_btn">Schedule</string>
+    <string name="save_schedule">save schedule</string>
+</resources>
