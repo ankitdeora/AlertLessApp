@@ -45,5 +45,8 @@ dependencies {
 
     // Multiple Date picker
     implementation 'com.applandeo:material-calendar-view:1.7.0'
+
+    // Multiple WeekDay picker
+    implementation 'ca.antonious:materialdaypicker:0.6.0'
 }
 

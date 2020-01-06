@@ -8,4 +8,5 @@
     <string name="next_activity_btn">Schedule</string>
     <string name="save_schedule">save schedule</string>
     <string name="profile_editor">Profile Editor</string>
+    <string name="week_days_btn">Week Days</string>
 </resources>

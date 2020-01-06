@@ -18,12 +18,27 @@ import com.example.alertless.utils.ToastUtils;
 import java.util.Calendar;
 import java.util.List;
 
+import ca.antonious.materialdaypicker.MaterialDayPicker;
+
 public class SchedulerActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scheduler);
+    }
+
+    public void showWeekDays(View v) {
+
+        MaterialDayPicker dayPicker = findViewById(R.id.day_picker);
+        List<MaterialDayPicker.Weekday> weekdays = dayPicker.getSelectedDays();
+
+        String msg = "";
+        for (MaterialDayPicker.Weekday day : weekdays) {
+            msg += String.format("-%s-", day.name());
+        }
+
+        ToastUtils.showToast(getApplicationContext(), msg);
     }
 
     public void showTimePickerDialog(View v) {
