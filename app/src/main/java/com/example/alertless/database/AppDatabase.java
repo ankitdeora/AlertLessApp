@@ -6,18 +6,19 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-import com.example.alertless.database.dao.UserDao;
-import com.example.alertless.database.entities.User;
+import com.example.alertless.database.dao.ProfileDao;
+import com.example.alertless.entities.ProfileDetails;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
-@Database(entities = {User.class}, version = 1, exportSchema = false)
+@Database(entities = {ProfileDetails.class}, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     public static final String ALERTLESS_DB_NAME = "alertless-db";
 
-    public abstract UserDao getUserDao();
+    public abstract ProfileDao getProfileDao();
+
     private static volatile AppDatabase INSTANCE;
 
     private static final int NUMBER_OF_THREADS = 4;

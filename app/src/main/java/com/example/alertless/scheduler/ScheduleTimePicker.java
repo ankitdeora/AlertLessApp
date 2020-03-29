@@ -7,7 +7,6 @@ import android.text.format.DateFormat;
 import android.widget.TimePicker;
 
 import androidx.fragment.app.DialogFragment;
-import androidx.room.util.StringUtil;
 
 import com.example.alertless.utils.ToastUtils;
 
@@ -24,7 +23,7 @@ public class ScheduleTimePicker extends DialogFragment
         int minute = c.get(Calendar.MINUTE);
 
         // Create a new instance of TimePickerDialog and return it
-        return new TimePickerDialog(getActivity(), this, hour, minute,
+        return new TimePickerDialog(getActivity(), this, hour+1, minute+1,
                 DateFormat.is24HourFormat(getActivity()));
     }
 

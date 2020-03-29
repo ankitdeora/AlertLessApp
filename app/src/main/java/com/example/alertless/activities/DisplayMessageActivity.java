@@ -1,24 +1,12 @@
 package com.example.alertless.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.DialogFragment;
-
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.TextView;
 
-import com.applandeo.materialcalendarview.CalendarView;
-import com.applandeo.materialcalendarview.EventDay;
-import com.applandeo.materialcalendarview.listeners.OnDayClickListener;
-import com.applandeo.materialcalendarview.listeners.OnSelectDateListener;
-import com.example.alertless.R;
-import com.example.alertless.activities.MainActivity;
-import com.example.alertless.scheduler.ScheduleTimePicker;
-import com.example.alertless.utils.ToastUtils;
+import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.Calendar;
-import java.util.List;
+import com.example.alertless.R;
 
 public class DisplayMessageActivity extends AppCompatActivity {
 

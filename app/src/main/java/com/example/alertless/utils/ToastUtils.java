@@ -4,10 +4,14 @@ import android.content.Context;
 import android.widget.Toast;
 
 public class ToastUtils {
-    private static final int DURATION = Toast.LENGTH_SHORT;
+    private static final int SHORT_DURATION = Toast.LENGTH_SHORT;
 
     public static void showToast(Context context, String msg) {
-        Toast.makeText(context, msg, DURATION).show();
+        showToast(context, msg, SHORT_DURATION);
+    }
+
+    public static void showToast(Context context, String msg, int duration) {
+        Toast.makeText(context, msg, duration).show();
     }
 
 }

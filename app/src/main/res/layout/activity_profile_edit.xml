@@ -7,15 +7,27 @@
     tools:context=".activities.ProfileEditActivity">
 
     <Button
-        android:id="@+id/showDateTime3"
+        android:id="@+id/schedule_btn"
         android:layout_width="166dp"
         android:layout_height="43dp"
-        android:layout_marginTop="296dp"
+        android:layout_marginTop="292dp"
         android:onClick="schedule"
         android:text="@string/next_activity_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/silent_more_apps_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:onClick="silentMoreApps"
+        android:text="Silent More Apps"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/schedule_btn" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

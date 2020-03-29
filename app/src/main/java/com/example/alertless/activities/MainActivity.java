@@ -1,30 +1,24 @@
 package com.example.alertless.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.DialogFragment;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
-import com.applandeo.materialcalendarview.CalendarView;
-import com.applandeo.materialcalendarview.DatePicker;
-import com.applandeo.materialcalendarview.builders.DatePickerBuilder;
-import com.applandeo.materialcalendarview.listeners.OnSelectDateListener;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.alertless.R;
-import com.example.alertless.database.entities.User;
-import com.example.alertless.database.repositories.UserRepository;
-import com.example.alertless.scheduler.ScheduleDatePicker;
-import com.example.alertless.scheduler.ScheduleTimePicker;
+import com.example.alertless.database.repositories.ProfileRepository;
+import com.example.alertless.entities.ProfileDetails;
+import com.example.alertless.models.Profile;
 import com.example.alertless.utils.ToastUtils;
 
-import java.util.Calendar;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_MESSAGE = "com.example.alertless.activities.MainActivity.MESSAGE";
-    private UserRepository userRepository;
+    private List<Profile> profiles;
+    private ProfileRepository profileRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Init userRepository
-        userRepository = new UserRepository(getApplication());
+        profileRepository = ProfileRepository.getInstance(getApplication());
     }
 
     /** Called when the user taps the Send button */
@@ -42,17 +36,18 @@ public class MainActivity extends AppCompatActivity {
         final String message = editText.getText().toString();
 
         // insert to DB
-        User user = new User(message, "deora");
-        userRepository.insertUser(user);
-        ToastUtils.showToast(getApplicationContext(),"Saved user : " + user.toString());
+        ProfileDetails profileDetails = new ProfileDetails(String.valueOf(message.hashCode()), message, message.length() % 2 == 0);
+        profileRepository.insertProfile(profileDetails);
+        ToastUtils.showToast(getApplicationContext(),"Saved Profile : " + profileDetails.toString());
 
         intent.putExtra(EXTRA_MESSAGE, message);
         startActivity(intent);
     }
 
     public void listAllUsers(View view) throws Exception {
-        List<User> usersList = userRepository.getAllUsers();
-        ToastUtils.showToast(getApplicationContext(), usersList.toString());
+
+        List<ProfileDetails> profiles = profileRepository.getAllProfiles();
+        ToastUtils.showToast(getApplicationContext(), profiles.toString());
     }
 
     public void editProfile(View view) throws Exception {
