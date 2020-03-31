@@ -53,7 +53,6 @@ dependencies {
     // Multiple WeekDay picker
     implementation 'ca.antonious:materialdaypicker:0.6.0'
 
-    // Dependency Injection with Dagger
-    implementation  'com.google.dagger:dagger:2.13'
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.13'
+    // Recycler view for list
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
 }
