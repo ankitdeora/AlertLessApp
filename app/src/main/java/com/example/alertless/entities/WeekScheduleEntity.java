@@ -1,6 +1,6 @@
 package com.example.alertless.entities;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,10 +8,12 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @ToString
+@Builder
 @EqualsAndHashCode
-public class AppDetails {
+public class WeekScheduleEntity {
     private String id;
-    private String name;
+    private byte weekdays;
+    private String dateRangeId;
+
 }

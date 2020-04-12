@@ -1,6 +1,5 @@
 package com.example.alertless.entities.relations;
 
-import com.example.alertless.entities.ScheduleType;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -12,8 +11,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @EqualsAndHashCode
-public class ProfileSchedule {
+public class ProfileAppRelation {
     private String profileId;
-    private ScheduleType scheduleType;
-    private String scheduleId;
+    private String silentAppId;
 }

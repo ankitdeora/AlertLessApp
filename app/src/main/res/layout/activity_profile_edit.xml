@@ -7,19 +7,19 @@
     tools:context=".activities.ProfileEditActivity">
 
     <Button
-        android:id="@+id/schedule_btn"
+        android:id="@+id/scheduleBtn"
         android:layout_width="166dp"
         android:layout_height="43dp"
-        android:layout_marginTop="292dp"
+        android:layout_marginTop="124dp"
         android:onClick="schedule"
         android:text="@string/next_activity_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/profileEditText" />
 
     <Button
-        android:id="@+id/silent_more_apps_btn"
+        android:id="@+id/silentMoreAppsBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
@@ -28,6 +28,39 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/schedule_btn" />
+        app:layout_constraintTop_toBottomOf="@+id/scheduleBtn" />
+
+    <EditText
+        android:id="@+id/profileEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="32dp"
+        android:ems="10"
+        android:hint="add profile name"
+        android:inputType="textPersonName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/profileAddBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="64dp"
+        android:onClick="saveProfile"
+        android:text="save"
+        app:layout_constraintBaseline_toBaselineOf="@+id/profileEditText"
+        app:layout_constraintStart_toEndOf="@+id/profileEditText" />
+
+    <Button
+        android:id="@+id/deleteBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:layout_marginEnd="24dp"
+        android:onClick="deleteProfile"
+        android:text="Delete"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profileAddBtn" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

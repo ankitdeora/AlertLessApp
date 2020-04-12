@@ -1,6 +1,6 @@
 package com.example.alertless.entities;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,11 +8,11 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @ToString
+@Builder
 @EqualsAndHashCode
-public class DailyTimeRange {
+public class DateScheduleEntity {
     private String id;
-    private int dailyStartMin;
-    private int dailyEndMin;
+    private String dateScheduleId;
+    private String dateRangeId;
 }

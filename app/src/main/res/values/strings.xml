@@ -9,4 +9,9 @@
     <string name="save_schedule">save schedule</string>
     <string name="profile_editor">Profile Editor</string>
     <string name="week_days_btn">Week Days</string>
+    <string name="week_schedule_valid_from_btn_text">Valid From</string>
+    <string name="week_schedule_valid_till_btn_text">Valid Till</string>
+
+    <string name="start_time_btn_text">Start Time</string>
+    <string name="end_time_btn_text">End Time</string>
 </resources>

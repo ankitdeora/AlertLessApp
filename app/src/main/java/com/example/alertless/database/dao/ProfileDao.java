@@ -4,8 +4,9 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
-import com.example.alertless.entities.ProfileDetails;
+import com.example.alertless.entities.ProfileDetailsEntity;
 
 import java.util.List;
 
@@ -13,23 +14,26 @@ import java.util.List;
 public interface ProfileDao {
 
     @Query("SELECT * FROM profile_details")
-    List<ProfileDetails> getProfiles();
+    List<ProfileDetailsEntity> getProfiles();
+
+    @Query("SELECT * FROM profile_details WHERE profile_name = :profileName")
+    ProfileDetailsEntity findByName(String profileName);
 
     @Query("SELECT * FROM profile_details WHERE active=1")
-    List<ProfileDetails> getActiveProfiles();
+    List<ProfileDetailsEntity> getActiveProfiles();
 
     @Insert
-    void insertAll(ProfileDetails... profileDetails);
+    void insert(ProfileDetailsEntity profileDetailsEntity);
 
     @Delete
-    void delete(ProfileDetails profileDetails);
+    void delete(ProfileDetailsEntity profileDetailsEntity);
+
+    @Update
+    void update(ProfileDetailsEntity profileDetailsEntity);
 
     /*
     @Query("SELECT * FROM user WHERE uid IN (:userIds)")
     List<User> loadAllByIds(int[] userIds);
 
-    @Query("SELECT * FROM user WHERE first_name LIKE :first AND " +
-            "last_name LIKE :last LIMIT 1")
-    User findByName(String first, String last);
      */
 }

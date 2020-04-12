@@ -8,7 +8,7 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/profileRecyclerview"
-        android:layout_width="361dp"
+        android:layout_width="match_parent"
         android:layout_height="374dp"
         android:layout_marginTop="32dp"
         android:padding="@dimen/big_padding"
@@ -19,39 +19,11 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:listitem="@layout/profile_recyclerview_item" />
 
-    <EditText
-        android:id="@+id/editText"
-        android:layout_width="225dp"
-        android:layout_height="54dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="40dp"
-        android:ems="10"
-        android:hint="@string/edit_message"
-        android:inputType="textPersonName"
-        android:onClick="sendMessage"
-        app:layout_constraintEnd_toStartOf="@+id/button"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profileRecyclerview" />
-
-    <Button
-        android:id="@+id/button"
-        android:layout_width="92dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:onClick="sendMessage"
-        android:text="@string/button_send"
-        app:layout_constraintBaseline_toBaselineOf="@+id/editText"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/editText" />
-
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/floatingActionButton3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="48dp"
+        android:layout_marginEnd="60dp"
         android:layout_marginBottom="32dp"
         android:clickable="true"
         android:focusable="auto"
@@ -59,7 +31,7 @@
         android:src="@drawable/ic_add_black_24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText"
-        app:layout_constraintVertical_bias="0.825" />
+        app:layout_constraintTop_toBottomOf="@+id/profileRecyclerview"
+        app:layout_constraintVertical_bias="0.873" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

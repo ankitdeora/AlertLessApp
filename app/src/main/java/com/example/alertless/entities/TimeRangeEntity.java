@@ -1,7 +1,5 @@
 package com.example.alertless.entities;
 
-import java.util.Calendar;
-
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -13,9 +11,8 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @EqualsAndHashCode
-public class Schedule {
+public class TimeRangeEntity {
     private String id;
-    private long startDateMs;
-    private long endDateMs;
-    private String dailyTimeRangeId;
+    private int startMin;
+    private int endMin;
 }

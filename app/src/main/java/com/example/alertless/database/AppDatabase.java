@@ -7,13 +7,13 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
 import com.example.alertless.database.dao.ProfileDao;
-import com.example.alertless.entities.ProfileDetails;
+import com.example.alertless.entities.ProfileDetailsEntity;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
-@Database(entities = {ProfileDetails.class}, version = 1, exportSchema = false)
+@Database(entities = {ProfileDetailsEntity.class}, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     public static final String ALERTLESS_DB_NAME = "alertless-db";
 
