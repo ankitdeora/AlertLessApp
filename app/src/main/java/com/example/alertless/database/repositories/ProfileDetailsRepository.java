@@ -2,6 +2,8 @@ package com.example.alertless.database.repositories;
 
 import android.app.Application;
 
+import androidx.lifecycle.LiveData;
+
 import com.example.alertless.database.dao.ProfileDao;
 import com.example.alertless.entities.ProfileDetailsEntity;
 import com.example.alertless.models.ProfileDetailsModel;
@@ -10,16 +12,16 @@ import com.example.alertless.utils.DBUtils;
 
 import java.util.Date;
 import java.util.List;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 public class ProfileDetailsRepository extends Repository {
     private static volatile ProfileDetailsRepository INSTANCE;
     private final ProfileDao profileDao;
+    private LiveData<List<ProfileDetailsEntity>> allProfileDetailsEntities;
 
     private ProfileDetailsRepository(Application application) {
         super(application);
         profileDao = appDatabase.getProfileDao();
+        allProfileDetailsEntities = profileDao.getAllProfiles();
     }
 
     public static ProfileDetailsRepository getInstance(Application application) {
@@ -90,14 +92,8 @@ public class ProfileDetailsRepository extends Repository {
         return ProfileDetailsModel.getModel(entity);
     }
 
-    public List<ProfileDetailsModel> getAllProfilesDetails() throws AlertlessDatabaseException {
-
-        String errMsg = "Could not fetch profiles from DB";
-        final List<ProfileDetailsEntity> entities = DBUtils.executeTaskAndGet((Supplier<List<ProfileDetailsEntity>>) profileDao::getProfiles, errMsg);
-        return entities.stream()
-                    .map(ProfileDetailsModel::getModel)
-                    .collect(Collectors.toList());
-
+    public LiveData<List<ProfileDetailsEntity>> getAllProfileDetailsEntity() {
+        return allProfileDetailsEntities;
     }
 
 }

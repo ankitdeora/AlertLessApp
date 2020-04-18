@@ -1,5 +1,6 @@
 package com.example.alertless.database.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -14,13 +15,13 @@ import java.util.List;
 public interface ProfileDao {
 
     @Query("SELECT * FROM profile_details")
-    List<ProfileDetailsEntity> getProfiles();
+    LiveData<List<ProfileDetailsEntity>> getAllProfiles();
 
-    @Query("SELECT * FROM profile_details WHERE profile_name = :profileName")
+    @Query("SELECT * FROM profile_details WHERE profile_name LIKE :profileName")
     ProfileDetailsEntity findByName(String profileName);
 
     @Query("SELECT * FROM profile_details WHERE active=1")
-    List<ProfileDetailsEntity> getActiveProfiles();
+    LiveData<List<ProfileDetailsEntity>> getActiveProfiles();
 
     @Insert
     void insert(ProfileDetailsEntity profileDetailsEntity);

@@ -5,12 +5,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.alertless.R;
+import com.example.alertless.commons.ButtonState;
 import com.example.alertless.commons.ScheduleType;
 import com.example.alertless.database.repositories.ProfileDetailsRepository;
 import com.example.alertless.exceptions.AlertlessDatabaseException;
@@ -43,6 +45,8 @@ public class ProfileEditActivity extends AppCompatActivity {
         if (currentProfile != null && currentProfile.getDetails() != null) {
             EditText profileEditText = (EditText) findViewById(R.id.profileEditText);
             profileEditText.setText(currentProfile.getDetails().getName());
+        } else {
+            setButtonsState(ButtonState.DISABLED);
         }
 
         // Init userRepository
@@ -99,6 +103,8 @@ public class ProfileEditActivity extends AppCompatActivity {
 
         try {
             profileDetailsRepository.insertProfileDetails(profileDetails);
+            setButtonsState(ButtonState.ENABLED);
+
             ToastUtils.showToast(getApplicationContext(),"Saved Profile : " + profileDetails.toString());
         } catch (AlertlessDatabaseException e) {
             Log.e(TAG, e.getMessage(), e);
@@ -106,6 +112,16 @@ public class ProfileEditActivity extends AppCompatActivity {
         }
 
         // TODO : Go back to previous activity by removing current activity from activity stack
+    }
+
+    private void setButtonsState(final ButtonState state) {
+        boolean setEnabled = ButtonState.ENABLED.equals(state);
+
+        Button scheduleBtn = findViewById(R.id.scheduleBtn);
+        scheduleBtn.setEnabled(setEnabled);
+
+        Button silentMoreAppsBtn = findViewById(R.id.silentMoreAppsBtn);
+        silentMoreAppsBtn.setEnabled(setEnabled);
     }
 
     public void deleteProfile(View view) {
@@ -120,6 +136,8 @@ public class ProfileEditActivity extends AppCompatActivity {
         try {
             profileDetailsRepository.deleteProfileDetails(profileName);
             ToastUtils.showToast(getApplicationContext(),"Deleted Profile : " + profileName);
+
+            finish();
         } catch (AlertlessDatabaseException e) {
             Log.e(TAG, e.getMessage(), e);
             ToastUtils.showToast(getApplicationContext(), e.getMessage());

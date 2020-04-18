@@ -2,52 +2,48 @@ package com.example.alertless.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.alertless.R;
-import com.example.alertless.database.repositories.ProfileDetailsRepository;
-import com.example.alertless.models.Profile;
+import com.example.alertless.entities.ProfileDetailsEntity;
 import com.example.alertless.models.ProfileDetailsModel;
 import com.example.alertless.utils.Constants;
-import com.example.alertless.utils.ToastUtils;
-import com.example.alertless.view.ProfileListAdapter;
+import com.example.alertless.view.adapters.ProfileListAdapter;
+import com.example.alertless.view.models.ProfileViewModel;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getName() + Constants.TAG_SUFFIX;
-    private List<Profile> profiles;
-    private ProfileDetailsRepository profileDetailsRepository;
+    private ProfileViewModel profileViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ProfileListAdapter adapter = getProfileListAdapter();
+        ProfileListAdapter profileListAdapter = getProfileListAdapter();
 
-        // Init userRepository
-        profileDetailsRepository = ProfileDetailsRepository.getInstance(getApplication());
+        // Init Profile view model
+        profileViewModel = ViewModelProviders.of(this).get(ProfileViewModel.class);
+        profileViewModel.getAllProfileDetailsEntities().observe(this, new Observer<List<ProfileDetailsEntity>>() {
+            @Override
+            public void onChanged(List<ProfileDetailsEntity> profileDetailsEntities) {
+                List<ProfileDetailsModel> profileDetailsModels = profileDetailsEntities.stream()
+                        .map(ProfileDetailsModel::getModel)
+                        .collect(Collectors.toList());
 
-        List<ProfileDetailsModel> profilesDetails = null;
-        try {
-            profilesDetails = profileDetailsRepository.getAllProfilesDetails();
-        } catch (Exception e) {
-            String warnMsg = "Could not find any User Profile !!!";
-            Log.e(TAG, e.getMessage(), e);
-            ToastUtils.showToast(getApplicationContext(), warnMsg);
-        }
-
-        if (profilesDetails != null) {
-            adapter.setProfileDetails(profilesDetails);
-        }
-
+                profileListAdapter.setProfileDetails(profileDetailsModels);
+            }
+        });
     }
 
 

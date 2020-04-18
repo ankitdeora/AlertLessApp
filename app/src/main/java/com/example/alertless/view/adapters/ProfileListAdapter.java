@@ -1,4 +1,4 @@
-package com.example.alertless.view;
+package com.example.alertless.view.adapters;
 
 import android.app.Activity;
 import android.app.Application;
@@ -50,10 +50,10 @@ public class ProfileListAdapter extends RecyclerView.Adapter<ProfileListAdapter.
         private View.OnClickListener getProfileOnClickListener() {
             return v -> {
                 final CharSequence profileName = ((TextView) v).getText();
-                ProfileDetailsModel profileDetail = mProfileMap.get(profileName);
+                ProfileDetailsModel profileDetails = mProfileMap.get(profileName);
 
                 Profile profile = Profile.builder()
-                                    .details(profileDetail)
+                                    .details(profileDetails)
                                     .build();
 
                 Intent intent = new Intent(mContext, ProfileEditActivity.class);
