@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,7 +17,7 @@ import com.applandeo.materialcalendarview.builders.DatePickerBuilder;
 import com.applandeo.materialcalendarview.listeners.OnSelectDateListener;
 import com.example.alertless.R;
 import com.example.alertless.commons.ScheduleType;
-import com.example.alertless.exceptions.AlertlessFlowException;
+import com.example.alertless.exceptions.AlertlessException;
 import com.example.alertless.models.DateRangeModel;
 import com.example.alertless.models.DateScheduleModel;
 import com.example.alertless.models.Schedule;
@@ -31,7 +30,6 @@ import com.example.alertless.utils.DateRangeUtils;
 import com.example.alertless.utils.ToastUtils;
 import com.example.alertless.utils.WeekUtils;
 
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
@@ -114,7 +112,7 @@ public class SchedulerActivity extends AppCompatActivity {
         currentWeekSchedule.getDateRangeModel().setTimeRangeModel(this.timeRangeModel);
     }
 
-    private void populateSelectedSchedule() throws AlertlessFlowException {
+    private void populateSelectedSchedule() throws AlertlessException {
 
         if (ScheduleType.BY_WEEK.equals(this.currentSchedule.getType())) {
             populateWeekDaySchedule();
@@ -142,7 +140,7 @@ public class SchedulerActivity extends AppCompatActivity {
             returnIntent.putExtra(Constants.SCHEDULE_RESULT, this.currentSchedule);
             setResult(Activity.RESULT_OK, returnIntent);
 
-        } catch (AlertlessFlowException e) {
+        } catch (AlertlessException e) {
             returnIntent.putExtra(Constants.SCHEDULE_ERROR, e.getMessage());
             setResult(Activity.RESULT_CANCELED, returnIntent);
         }

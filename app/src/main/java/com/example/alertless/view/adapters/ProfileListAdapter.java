@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.alertless.R;
 import com.example.alertless.activities.ProfileEditActivity;
 import com.example.alertless.database.repositories.ProfileDetailsRepository;
-import com.example.alertless.exceptions.AlertlessDatabaseException;
+import com.example.alertless.exceptions.AlertlessException;
 import com.example.alertless.models.Profile;
 import com.example.alertless.models.ProfileDetailsModel;
 import com.example.alertless.utils.Constants;
@@ -78,10 +78,10 @@ public class ProfileListAdapter extends RecyclerView.Adapter<ProfileListAdapter.
                 String updateAction = isChecked ? ENABLED : DISABLED;
                 // Update in DB
                 try {
-                    profileDetailsRepository.updateProfileDetails(clickedProfile);
+                    profileDetailsRepository.updateProfileDetails(profileName, isChecked);
                     String updateMsg = String.format("Profile : %s %s", profileName, updateAction);
                     ToastUtils.showToast(mContext, updateMsg);
-                } catch (AlertlessDatabaseException e) {
+                } catch (AlertlessException e) {
                     Log.e(TAG, e.getMessage(), e);
                     ToastUtils.showToast(mContext, e.getMessage());
                 }

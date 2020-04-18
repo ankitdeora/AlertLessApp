@@ -13,18 +13,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.alertless.R;
 import com.example.alertless.commons.ButtonState;
-import com.example.alertless.commons.ScheduleType;
 import com.example.alertless.database.repositories.ProfileDetailsRepository;
 import com.example.alertless.exceptions.AlertlessDatabaseException;
+import com.example.alertless.exceptions.AlertlessException;
 import com.example.alertless.models.Profile;
 import com.example.alertless.models.ProfileDetailsModel;
 import com.example.alertless.models.Schedule;
-import com.example.alertless.models.WeekScheduleModel;
 import com.example.alertless.utils.Constants;
 import com.example.alertless.utils.StringUtils;
 import com.example.alertless.utils.ToastUtils;
 
-import java.util.ArrayList;
 import java.util.Optional;
 
 public class ProfileEditActivity extends AppCompatActivity {
@@ -88,8 +86,7 @@ public class ProfileEditActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    /** Called when the user taps the Send button */
-    public void saveProfile(View view) {
+    public void saveProfileName(View view) {
 
         final String profileName = checkAndGetProfileNameFromView();
 
@@ -102,16 +99,21 @@ public class ProfileEditActivity extends AppCompatActivity {
         ProfileDetailsModel profileDetails = new ProfileDetailsModel(profileName, DEFAULT_PROFILE_SWITCH_STATE);
 
         try {
-            profileDetailsRepository.insertProfileDetails(profileDetails);
+            if (currentProfile == null || currentProfile.getDetails() == null) {
+                profileDetailsRepository.insertProfileDetails(profileDetails);
+            } else {
+                profileDetailsRepository.updateProfileDetails(currentProfile.getDetails().getName(), profileName);
+                currentProfile.getDetails().setName(profileName);
+            }
+
             setButtonsState(ButtonState.ENABLED);
 
             ToastUtils.showToast(getApplicationContext(),"Saved Profile : " + profileDetails.toString());
-        } catch (AlertlessDatabaseException e) {
+        } catch (AlertlessException e) {
             Log.e(TAG, e.getMessage(), e);
             ToastUtils.showToast(getApplicationContext(), e.getMessage());
         }
 
-        // TODO : Go back to previous activity by removing current activity from activity stack
     }
 
     private void setButtonsState(final ButtonState state) {
@@ -138,7 +140,7 @@ public class ProfileEditActivity extends AppCompatActivity {
             ToastUtils.showToast(getApplicationContext(),"Deleted Profile : " + profileName);
 
             finish();
-        } catch (AlertlessDatabaseException e) {
+        } catch (AlertlessException e) {
             Log.e(TAG, e.getMessage(), e);
             ToastUtils.showToast(getApplicationContext(), e.getMessage());
         }
@@ -165,7 +167,7 @@ public class ProfileEditActivity extends AppCompatActivity {
             });
 
             ToastUtils.showToast(getApplicationContext(),"Got Profile : " + profileDetails.toString());
-        } catch (AlertlessDatabaseException e) {
+        } catch (AlertlessException e) {
             Log.e(TAG, e.getMessage(), e);
             ToastUtils.showToast(getApplicationContext(), e.getMessage());
         }

@@ -47,7 +47,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="64dp"
-        android:onClick="saveProfile"
+        android:onClick="saveProfileName"
         android:text="save"
         app:layout_constraintBaseline_toBaselineOf="@+id/profileEditText"
         app:layout_constraintStart_toEndOf="@+id/profileEditText" />

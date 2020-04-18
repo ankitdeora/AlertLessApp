@@ -1,6 +1,6 @@
 package com.example.alertless.exceptions;
 
-public class AlertlessDatabaseException extends Exception {
+public class AlertlessDatabaseException extends AlertlessException {
     public AlertlessDatabaseException() {
     }
 
