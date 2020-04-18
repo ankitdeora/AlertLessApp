@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,6 +23,7 @@ import com.example.alertless.models.Schedule;
 import com.example.alertless.utils.Constants;
 import com.example.alertless.utils.StringUtils;
 import com.example.alertless.utils.ToastUtils;
+
 
 import java.util.Optional;
 
@@ -41,14 +43,28 @@ public class ProfileEditActivity extends AppCompatActivity {
         currentProfile = (Profile) getIntent().getSerializableExtra(Constants.CURRENT_PROFILE);
 
         if (currentProfile != null && currentProfile.getDetails() != null) {
+            String profileName = currentProfile.getDetails().getName();
+
             EditText profileEditText = (EditText) findViewById(R.id.profileEditText);
-            profileEditText.setText(currentProfile.getDetails().getName());
+            profileEditText.setText(profileName);
+
+            updateProfileTextView();
         } else {
+
+            if (currentProfile == null) {
+                currentProfile = new Profile();
+            }
+
             setButtonsState(ButtonState.DISABLED);
         }
 
         // Init userRepository
         profileDetailsRepository = ProfileDetailsRepository.getInstance(getApplication());
+    }
+
+    private void updateProfileTextView() {
+        TextView profileTextView = findViewById(R.id.profileTextView);
+        profileTextView.setText("Profile : " + currentProfile.getDetails().getName());
     }
 
     @Override
@@ -96,19 +112,31 @@ public class ProfileEditActivity extends AppCompatActivity {
         }
 
         // insert to DB
-        ProfileDetailsModel profileDetails = new ProfileDetailsModel(profileName, DEFAULT_PROFILE_SWITCH_STATE);
 
         try {
-            if (currentProfile == null || currentProfile.getDetails() == null) {
+            if (currentProfile.getDetails() == null) {
+                ProfileDetailsModel profileDetails = new ProfileDetailsModel(profileName, DEFAULT_PROFILE_SWITCH_STATE);
+
                 profileDetailsRepository.insertProfileDetails(profileDetails);
+
+                // Update state
+                currentProfile.setDetails(profileDetails);
+
+                // Enable buttons
+                setButtonsState(ButtonState.ENABLED);
+
+                ToastUtils.showToast(getApplicationContext(),"Saved Profile : " + profileDetails.toString());
             } else {
                 profileDetailsRepository.updateProfileDetails(currentProfile.getDetails().getName(), profileName);
+
+                // Update state
                 currentProfile.getDetails().setName(profileName);
+                ToastUtils.showToast(getApplicationContext(),"Updated Profile Name to : " + profileName);
             }
 
-            setButtonsState(ButtonState.ENABLED);
+            // Update UI
+            updateProfileTextView();
 
-            ToastUtils.showToast(getApplicationContext(),"Saved Profile : " + profileDetails.toString());
         } catch (AlertlessException e) {
             Log.e(TAG, e.getMessage(), e);
             ToastUtils.showToast(getApplicationContext(), e.getMessage());
