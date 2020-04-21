@@ -1,5 +1,7 @@
 package com.example.alertless.models;
 
+import com.example.alertless.commons.ScheduleType;
+
 import java.io.Serializable;
 
 import lombok.AllArgsConstructor;
@@ -17,7 +19,8 @@ import lombok.experimental.SuperBuilder;
 @ToString
 @EqualsAndHashCode
 @SuperBuilder
-public class DateRangeModel implements Serializable {
-    private long startDateMs;
-    private long endDateMs;
+public abstract class ScheduleModel implements Serializable {
+
+    private TimeRangeModel timeRangeModel;
+    public abstract ScheduleType getType();
 }

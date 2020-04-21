@@ -9,7 +9,6 @@ import androidx.room.PrimaryKey;
 import com.example.alertless.models.ProfileDetailsModel;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +18,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import static com.example.alertless.utils.Constants.ACTIVE_COL;
+import static com.example.alertless.utils.Constants.PROFILE_DETAILS_TABLE;
+import static com.example.alertless.utils.Constants.PROFILE_NAME_COL;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -26,7 +29,8 @@ import lombok.ToString;
 @ToString
 @Builder
 @EqualsAndHashCode
-@Entity(tableName = "profile_details", indices = {@Index(value = {"profile_name"}, unique = true)})
+@Entity(tableName = PROFILE_DETAILS_TABLE,
+        indices = {@Index(value = {PROFILE_NAME_COL}, unique = true)})
 public class ProfileDetailsEntity implements Serializable {
 
     @NonNull
@@ -34,10 +38,10 @@ public class ProfileDetailsEntity implements Serializable {
     private String id;
 
     @NonNull
-    @ColumnInfo(name = "profile_name")
+    @ColumnInfo(name = PROFILE_NAME_COL)
     private String name;
 
-    @ColumnInfo(name = "active")
+    @ColumnInfo(name = ACTIVE_COL)
     private boolean active;
 
     public ProfileDetailsEntity(String name, boolean active) {

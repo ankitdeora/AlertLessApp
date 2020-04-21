@@ -17,10 +17,13 @@ import com.applandeo.materialcalendarview.builders.DatePickerBuilder;
 import com.applandeo.materialcalendarview.listeners.OnSelectDateListener;
 import com.example.alertless.R;
 import com.example.alertless.commons.ScheduleType;
+import com.example.alertless.database.repositories.TimeRangeRepository;
+import com.example.alertless.entities.TimeRangeEntity;
+import com.example.alertless.exceptions.AlertlessDatabaseException;
 import com.example.alertless.exceptions.AlertlessException;
 import com.example.alertless.models.DateRangeModel;
-import com.example.alertless.models.DateScheduleModel;
-import com.example.alertless.models.Schedule;
+import com.example.alertless.models.MultiRangeScheduleModel;
+import com.example.alertless.models.ScheduleModel;
 import com.example.alertless.models.TimeRangeModel;
 import com.example.alertless.models.WeekScheduleModel;
 import com.example.alertless.scheduler.WeekScheduleDatePicker;
@@ -47,10 +50,13 @@ public class SchedulerActivity extends AppCompatActivity {
     private static final String TAG = SchedulerActivity.class.getName() + Constants.TAG_SUFFIX;
     private int datePickerType = MANY_DAYS_PICKER; // default picker type
 
-    // State Variables Should be initialized in OnCreate()
+    // Repository
+    TimeRangeRepository repository = TimeRangeRepository.getInstance(getApplication());
+
+    // State Variables to store states (user preferences)
     private WeekScheduleModel weekSchedule;
-    private Map<Integer, DateScheduleModel> dateScheduleMap;
-    private Schedule currentSchedule;
+    private Map<Integer, MultiRangeScheduleModel> multiRangeScheduleMap;
+    private ScheduleModel currentSchedule;
     private TimeRangeModel timeRangeModel;
 
     @Override
@@ -77,11 +83,11 @@ public class SchedulerActivity extends AppCompatActivity {
             this.weekSchedule.setWeekdays(selectedWeekDays);
         });
 
-        this.dateScheduleMap = new HashMap<>();
-        this.dateScheduleMap.put(MANY_DAYS_PICKER, new DateScheduleModel());
-        this.dateScheduleMap.put(RANGE_PICKER, new DateScheduleModel());
+        this.multiRangeScheduleMap = new HashMap<>();
+        this.multiRangeScheduleMap.put(MANY_DAYS_PICKER, new MultiRangeScheduleModel());
+        this.multiRangeScheduleMap.put(RANGE_PICKER, new MultiRangeScheduleModel());
 
-        RadioGroup scheduleRadioGroup = (RadioGroup) findViewById(R.id.scheduleRadioGroup);
+        RadioGroup scheduleRadioGroup = findViewById(R.id.scheduleRadioGroup);
         int selectedScheduleRadioId = scheduleRadioGroup.getCheckedRadioButtonId();
 
         this.currentSchedule = this.weekSchedule; // default is set to week
@@ -89,14 +95,14 @@ public class SchedulerActivity extends AppCompatActivity {
         if (R.id.radio_date == selectedScheduleRadioId) {
             this.datePickerType = MANY_DAYS_PICKER; // default value
 
-            RadioGroup dateRadioGroup = (RadioGroup) findViewById(R.id.date_selector_radios);
+            RadioGroup dateRadioGroup = findViewById(R.id.date_selector_radios);
             int selectedDateRadioId = dateRadioGroup.getCheckedRadioButtonId();
 
             if (R.id.range_selector_radio == selectedDateRadioId) {
                 this.datePickerType = RANGE_PICKER;
             }
 
-            this.currentSchedule = this.dateScheduleMap.get(this.datePickerType);
+            this.currentSchedule = this.multiRangeScheduleMap.get(this.datePickerType);
         }
 
     }
@@ -109,7 +115,7 @@ public class SchedulerActivity extends AppCompatActivity {
         WeekUtils.checkAndSetDateRangeInWeekSchedule(currentWeekSchedule);
 
         // Set Time Range
-        currentWeekSchedule.getDateRangeModel().setTimeRangeModel(this.timeRangeModel);
+        currentWeekSchedule.setTimeRangeModel(this.timeRangeModel);
     }
 
     private void populateSelectedSchedule() throws AlertlessException {
@@ -137,15 +143,32 @@ public class SchedulerActivity extends AppCompatActivity {
             populateSelectedSchedule();
             Log.i(TAG, this.currentSchedule.toString());
 
+            // TODO: remove save time range
+            saveTimeRange();
             returnIntent.putExtra(Constants.SCHEDULE_RESULT, this.currentSchedule);
             setResult(Activity.RESULT_OK, returnIntent);
 
         } catch (AlertlessException e) {
             returnIntent.putExtra(Constants.SCHEDULE_ERROR, e.getMessage());
             setResult(Activity.RESULT_CANCELED, returnIntent);
+            ToastUtils.showToast(getApplicationContext(), e.getMessage());
         }
 
         finish();
+
+    }
+
+    public void showTimeRange(View v) throws AlertlessDatabaseException {
+        List<TimeRangeEntity> entities = repository.getAllTimeRangeEntities();
+        Log.i(TAG, "============= SAVED TIME RANGES =============");
+        Log.i(TAG, entities.toString());
+        ToastUtils.showToast(getApplicationContext(), entities.toString());
+    }
+
+    private void saveTimeRange() throws AlertlessDatabaseException {
+
+        repository.insertTimeRange(this.timeRangeModel);
+        ToastUtils.showToast(getApplicationContext(), "Schedule Saved !!!");
     }
 
     private boolean isValidScheduleData() {
@@ -161,7 +184,7 @@ public class SchedulerActivity extends AppCompatActivity {
             }
         } else if (ScheduleType.BY_DATE.equals(this.currentSchedule.getType())) {
 
-            DateScheduleModel dateScheduleModel = (DateScheduleModel) this.currentSchedule;
+            MultiRangeScheduleModel dateScheduleModel = (MultiRangeScheduleModel) this.currentSchedule;
             if (dateScheduleModel.getDateRangeModels() == null) {
                 showAlertDialog("No Schedule Selection", "Please select at least one date !!!");
                 return false;
@@ -202,17 +225,17 @@ public class SchedulerActivity extends AppCompatActivity {
 
     public void onIndividualDatePickerRadioSelection(View v) {
         this.datePickerType = MANY_DAYS_PICKER;
-        this.currentSchedule = this.dateScheduleMap.get(MANY_DAYS_PICKER);
+        this.currentSchedule = this.multiRangeScheduleMap.get(MANY_DAYS_PICKER);
     }
 
     public void onRangeDatePickerRadioSelection(View v) {
         this.datePickerType = RANGE_PICKER;
-        this.currentSchedule = this.dateScheduleMap.get(RANGE_PICKER);
+        this.currentSchedule = this.multiRangeScheduleMap.get(RANGE_PICKER);
     }
 
     public void showMultipleDatePicker(View v) {
 
-        DateScheduleModel dateScheduleModel = this.dateScheduleMap.get(this.datePickerType);
+        MultiRangeScheduleModel dateScheduleModel = this.multiRangeScheduleMap.get(this.datePickerType);
         List<DateRangeModel> dateRangeModels = dateScheduleModel.getDateRangeModels();
 
         List<Calendar> existingDates = DateRangeUtils.getCalendarDates(dateRangeModels);
@@ -229,25 +252,16 @@ public class SchedulerActivity extends AppCompatActivity {
         datePicker.show();
     }
 
-    public Calendar getCalendar(int year, int month, int day) {
-        Calendar date = Calendar.getInstance();
-
-        date.set(Calendar.YEAR, year);
-        date.set(Calendar.MONTH, month);
-        date.set(Calendar.DAY_OF_MONTH, day);
-
-        return date;
-    }
-
     private OnSelectDateListener getSelectDateListener() {
         return new OnSelectDateListener() {
             @Override
             public void onSelect(List<Calendar> calendars) {
 
-                List<DateRangeModel> dateRangeModels = DateRangeUtils.getDateSchedule(calendars, timeRangeModel);
+                List<DateRangeModel> dateRangeModels = DateRangeUtils.getDateSchedule(calendars);
 
-                DateScheduleModel dateScheduleModel = dateScheduleMap.get(datePickerType);
+                MultiRangeScheduleModel dateScheduleModel = multiRangeScheduleMap.get(datePickerType);
                 dateScheduleModel.setDateRangeModels(dateRangeModels);
+                dateScheduleModel.setTimeRangeModel(timeRangeModel);
             }
         };
     }
@@ -285,6 +299,6 @@ public class SchedulerActivity extends AppCompatActivity {
         int datePickerRadioBtnId = this.datePickerType == RANGE_PICKER ? R.id.range_selector_radio : R.id.individual_selector_radio ;
         dateSelectorRadioGroup.check(datePickerRadioBtnId);
 
-        this.currentSchedule = this.dateScheduleMap.get(this.datePickerType);
+        this.currentSchedule = this.multiRangeScheduleMap.get(this.datePickerType);
     }
 }

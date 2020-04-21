@@ -13,10 +13,6 @@ import java.util.List;
 public class DateRangeUtils {
 
     public static List<DateRangeModel> getDateSchedule(List<Calendar> dates) {
-        return getDateSchedule(dates, null);
-    }
-
-    public static List<DateRangeModel> getDateSchedule(List<Calendar> dates, TimeRangeModel timeRangeModel) {
         if (dates == null) {
             return null;
         }
@@ -30,7 +26,6 @@ public class DateRangeUtils {
             Calendar firstDate = dates.get(i);
             DateRangeModel dateRangeModel = DateRangeModel.builder()
                                                 .startDateMs(firstDate.getTimeInMillis())
-                                                .timeRangeModel(timeRangeModel)
                                             .build();
 
             if (i == (count-1)) {

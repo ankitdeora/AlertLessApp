@@ -2,7 +2,6 @@ package com.example.alertless.models;
 
 import com.example.alertless.commons.ScheduleType;
 
-import java.io.Serializable;
 import java.util.List;
 
 import ca.antonious.materialdaypicker.MaterialDayPicker;
@@ -16,12 +15,12 @@ import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
-@ToString
+@ToString (callSuper = true)
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
-public class WeekScheduleModel implements Schedule {
+@EqualsAndHashCode (callSuper = true)
+public class WeekScheduleModel extends ScheduleModel {
     private List<MaterialDayPicker.Weekday> weekdays;
     private DateRangeModel dateRangeModel;
 

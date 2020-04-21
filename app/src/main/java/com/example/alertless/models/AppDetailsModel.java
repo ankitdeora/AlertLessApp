@@ -14,6 +14,6 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class AppDetailsModel implements Serializable {
-    private String name;
+    private String appName;
     private String packageName;
 }

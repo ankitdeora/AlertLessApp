@@ -85,4 +85,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/end_time_btn" />
 
+    <Button
+        android:id="@+id/scheduleShowbtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="160dp"
+        android:layout_marginTop="44dp"
+        android:onClick="showTimeRange"
+        android:text="show"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/schedule_save_btn" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

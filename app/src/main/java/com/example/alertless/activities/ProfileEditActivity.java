@@ -19,7 +19,7 @@ import com.example.alertless.exceptions.AlertlessDatabaseException;
 import com.example.alertless.exceptions.AlertlessException;
 import com.example.alertless.models.Profile;
 import com.example.alertless.models.ProfileDetailsModel;
-import com.example.alertless.models.Schedule;
+import com.example.alertless.models.ScheduleModel;
 import com.example.alertless.utils.Constants;
 import com.example.alertless.utils.StringUtils;
 import com.example.alertless.utils.ToastUtils;
@@ -74,7 +74,7 @@ public class ProfileEditActivity extends AppCompatActivity {
         if (requestCode == LAUNCH_SCHEDULER_ACTIVITY) {
             if(resultCode == Activity.RESULT_OK){
 
-                Schedule schedule = (Schedule) data.getSerializableExtra(Constants.SCHEDULE_RESULT);
+                ScheduleModel schedule = (ScheduleModel) data.getSerializableExtra(Constants.SCHEDULE_RESULT);
 
                 String toastMsg = "Returned OK, from scheduler : %s";
 
@@ -82,8 +82,12 @@ public class ProfileEditActivity extends AppCompatActivity {
                 ToastUtils.showToast(getApplicationContext(), toastMsg, Toast.LENGTH_LONG);
 
             } else if (resultCode == Activity.RESULT_CANCELED) {
+                String errResult = "null Data";
 
-                String errResult = data.getStringExtra(Constants.SCHEDULE_ERROR);
+                if (data != null) {
+                    errResult = data.getStringExtra(Constants.SCHEDULE_ERROR);
+                }
+
                 String errMsg = String.format("Scheduler Activity Cancelled due to error : %s", errResult);
                 ToastUtils.showToast(getApplicationContext(), errMsg);
             }

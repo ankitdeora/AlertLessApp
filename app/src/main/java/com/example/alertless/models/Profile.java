@@ -20,6 +20,6 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class Profile implements Serializable {
     private ProfileDetailsModel details;
-    private ArrayList<AppDetailsModel> silentApps;
-    private Schedule schedule;
+    private ArrayList<AppDetailsModel> apps;
+    private ScheduleModel schedule;
 }
