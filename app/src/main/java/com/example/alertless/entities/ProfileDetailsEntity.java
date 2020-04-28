@@ -31,7 +31,7 @@ import static com.example.alertless.utils.Constants.PROFILE_NAME_COL;
 @EqualsAndHashCode
 @Entity(tableName = PROFILE_DETAILS_TABLE,
         indices = {@Index(value = {PROFILE_NAME_COL}, unique = true)})
-public class ProfileDetailsEntity implements Serializable {
+public class ProfileDetailsEntity extends BaseEntity implements Serializable {
 
     @NonNull
     @PrimaryKey
@@ -49,16 +49,11 @@ public class ProfileDetailsEntity implements Serializable {
         this.active = active;
     }
 
-    public static ProfileDetailsEntity getEntity(ProfileDetailsModel profileDetailsModel, String profileId) {
-
-        if (profileDetailsModel == null) {
-            return null;
-        }
-
-        return ProfileDetailsEntity.builder()
-                    .id(profileId)
-                    .name(profileDetailsModel.getName())
-                    .active(profileDetailsModel.isActive())
+    @Override
+    public ProfileDetailsModel getModel() {
+        return ProfileDetailsModel.builder()
+                    .name(this.name)
+                    .active(this.active)
                 .build();
     }
 }

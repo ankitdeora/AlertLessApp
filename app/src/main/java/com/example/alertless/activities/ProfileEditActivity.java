@@ -121,7 +121,7 @@ public class ProfileEditActivity extends AppCompatActivity {
             if (currentProfile.getDetails() == null) {
                 ProfileDetailsModel profileDetails = new ProfileDetailsModel(profileName, DEFAULT_PROFILE_SWITCH_STATE);
 
-                profileDetailsRepository.insertProfileDetails(profileDetails);
+                profileDetailsRepository.createEntity(profileDetails);
 
                 // Update state
                 currentProfile.setDetails(profileDetails);
@@ -168,7 +168,7 @@ public class ProfileEditActivity extends AppCompatActivity {
 
         // TODO: show dialog for user to confirm if he/she really wants to delete?
         try {
-            profileDetailsRepository.deleteProfileDetails(profileName);
+            profileDetailsRepository.deleteProfile(profileName);
             ToastUtils.showToast(getApplicationContext(),"Deleted Profile : " + profileName);
 
             finish();

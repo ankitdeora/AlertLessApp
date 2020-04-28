@@ -1,6 +1,8 @@
 package com.example.alertless.models;
 
 import com.example.alertless.entities.ProfileDetailsEntity;
+import com.example.alertless.exceptions.AlertlessIllegalArgumentException;
+import com.example.alertless.utils.ValidationUtils;
 
 import java.io.Serializable;
 
@@ -19,19 +21,18 @@ import lombok.ToString;
 @ToString
 @Builder
 @EqualsAndHashCode
-public class ProfileDetailsModel implements Serializable {
+public class ProfileDetailsModel extends BaseModel implements Serializable {
     private String name;
     private boolean active;
 
-    public static ProfileDetailsModel getModel(ProfileDetailsEntity profileDetailsEntity) {
+    @Override
+    public ProfileDetailsEntity getEntity(String id) throws AlertlessIllegalArgumentException {
+        ValidationUtils.validateInput(id);
 
-        if (profileDetailsEntity == null) {
-            return null;
-        }
-
-        return ProfileDetailsModel.builder()
-                    .name(profileDetailsEntity.getName())
-                    .active(profileDetailsEntity.isActive())
+        return ProfileDetailsEntity.builder()
+                    .id(id)
+                    .name(this.name)
+                    .active(this.active)
                 .build();
     }
 }

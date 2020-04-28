@@ -5,27 +5,22 @@ import android.app.Application;
 import androidx.lifecycle.LiveData;
 
 import com.example.alertless.commons.ProfileState;
-import com.example.alertless.database.dao.ProfileDao;
 import com.example.alertless.entities.ProfileDetailsEntity;
-import com.example.alertless.exceptions.AlertlessException;
-import com.example.alertless.exceptions.AlertlessIllegalArgumentException;
-import com.example.alertless.models.ProfileDetailsModel;
 import com.example.alertless.exceptions.AlertlessDatabaseException;
-import com.example.alertless.utils.DBUtils;
-import com.example.alertless.utils.StringUtils;
+import com.example.alertless.exceptions.AlertlessException;
+import com.example.alertless.models.ProfileDetailsModel;
+import com.example.alertless.utils.ValidationUtils;
 
-import java.util.Date;
 import java.util.List;
 
-public class ProfileDetailsRepository extends Repository {
+public class ProfileDetailsRepository extends BaseRepository<ProfileDetailsEntity, ProfileDetailsModel> {
     private static volatile ProfileDetailsRepository INSTANCE;
-    private final ProfileDao profileDao;
     private LiveData<List<ProfileDetailsEntity>> allProfileDetailsEntities;
 
     private ProfileDetailsRepository(Application application) {
         super(application);
-        profileDao = appDatabase.getProfileDao();
-        allProfileDetailsEntities = profileDao.getAllProfiles();
+        this.dao = appDatabase.getProfileDao();
+        allProfileDetailsEntities = this.dao.findAllLiveEntities();
     }
 
     public static ProfileDetailsRepository getInstance(Application application) {
@@ -40,102 +35,66 @@ public class ProfileDetailsRepository extends Repository {
         return INSTANCE;
     }
 
-    public void insertProfileDetails(final ProfileDetailsModel model) throws AlertlessException {
-
-        String profileName = model.getName();
-        final ProfileDetailsEntity existingEntity = getProfileDetailsEntityByName(profileName);
-
-        if (existingEntity != null) {
-            String errMsg = String.format("Profile with name : %s already exist !!!", profileName);
-            throw new AlertlessDatabaseException(errMsg);
-        }
-
-        String uniqueId = String.valueOf(new Date().getTime());
-        final ProfileDetailsEntity entity = ProfileDetailsEntity.getEntity(model, uniqueId);
-
-        String errMsg = String.format("Could not insert profile : %s !!!", profileName);
-        DBUtils.executeTask(profileDao::insert, entity, errMsg);
-    }
-
     public void updateProfileDetails(CharSequence profileName, final CharSequence updatedName) throws AlertlessException {
 
-        validateProfileName(profileName);
-        validateProfileName(updatedName);
+        ValidationUtils.validateInput(updatedName);
+        ProfileDetailsEntity entity = checkAndGetProfile(profileName);
 
-        ProfileDetailsEntity entity = getProfileDetailsEntityByName(profileName);
+        String id = entity.getId();
+        ProfileDetailsModel model = entity.getModel();
 
-        if (entity == null) {
-            String errMsg = String.format("Profile with name : %s does not exist !!!", profileName);
-            throw new AlertlessDatabaseException(errMsg);
-        }
-
-        ProfileDetailsEntity entityWithUpdatedName = getProfileDetailsEntityByName(updatedName);
-
-        if (entityWithUpdatedName != null) {
-            String errMsg = String.format("Profile with name : %s already exist !!!", updatedName);
-            throw new AlertlessDatabaseException(errMsg);
-        }
-
-        // Update entity
-        entity.setName(updatedName.toString());
-
-        String errMsg = String.format("Could not rename profile : %s to %s !!!", profileName, updatedName);
-        DBUtils.executeTask(profileDao::update, entity, errMsg);
+        // update name
+        model.setName(updatedName.toString());
+        this.updateEntity(id, model);
     }
 
     public void updateProfileDetails(CharSequence profileName, final boolean active) throws AlertlessException {
-        ProfileDetailsEntity entity = getProfileDetailsEntityByName(profileName);
+        ProfileDetailsEntity entity = checkAndGetProfile(profileName);
 
-        if (entity == null) {
-            String errMsg = String.format("Profile with name : %s does not exist !!!", profileName);
-            throw new AlertlessDatabaseException(errMsg);
-        }
+        String id = entity.getId();
+        ProfileDetailsModel model = entity.getModel();
 
-        // Update entity
-        entity.setActive(active);
-
-        String errMsg = String.format("Could not update profile : %s !!!", profileName);
-        DBUtils.executeTask(profileDao::update, entity, errMsg);
+        // update active state
+        model.setActive(active);
+        this.updateEntity(id, model);
     }
 
     public void updateProfileDetails(CharSequence profileName, final ProfileState state) throws AlertlessException {
         updateProfileDetails(profileName, ProfileState.ACTIVE.equals(state));
     }
 
-    public void deleteProfileDetails(CharSequence profileName) throws AlertlessException {
+    public void deleteProfile(CharSequence name) throws AlertlessException {
+        ValidationUtils.validateInput(name);
 
-        final ProfileDetailsEntity existingEntity = getProfileDetailsEntityByName(profileName);
-
-        if (existingEntity == null) {
-            String errMsg = String.format("Profile with name : %s does not exist !!!", profileName);
-            throw new AlertlessDatabaseException(errMsg);
-        }
-
-        String errMsg = String.format("Could not delete profile : %s !!!", profileName);
-        DBUtils.executeTask(profileDao::delete, existingEntity, errMsg);
+        ProfileDetailsModel model = ProfileDetailsModel.builder().name(name.toString()).build();
+        this.deleteEntity(model);
     }
 
-    private ProfileDetailsEntity getProfileDetailsEntityByName(CharSequence name) throws AlertlessException {
-        validateProfileName(name);
+    private ProfileDetailsEntity getEntityByName(CharSequence name) throws AlertlessException {
+        ValidationUtils.validateInput(name);
 
-        String errMsg = String.format("Could not find profile by name : %s", name);
-        return DBUtils.executeTaskAndGet(profileDao::findByName, name.toString(), errMsg);
-    }
-
-    private void validateProfileName(CharSequence name) throws AlertlessIllegalArgumentException {
-        if (StringUtils.isBlank(name)) {
-            throw new AlertlessIllegalArgumentException("Profile name cannot be blank !!!");
-        }
+        ProfileDetailsModel model = ProfileDetailsModel.builder().name(name.toString()).build();
+        return this.getEntity(model);
     }
 
     public ProfileDetailsModel getProfileDetailsByName(CharSequence name) throws AlertlessException {
-
-        final ProfileDetailsEntity entity = getProfileDetailsEntityByName(name);
-        return ProfileDetailsModel.getModel(entity);
+        return getEntityByName(name).getModel();
     }
 
     public LiveData<List<ProfileDetailsEntity>> getAllProfileDetailsEntity() {
         return allProfileDetailsEntities;
     }
 
+    private ProfileDetailsEntity checkAndGetProfile(CharSequence profileName) throws AlertlessException {
+        ValidationUtils.validateInput(profileName);
+
+        ProfileDetailsEntity entity = getEntityByName(profileName);
+
+        if (entity == null) {
+            String errMsg = String.format("Update Failed as Profile with name : %s does not exist !!!", profileName);
+            throw new AlertlessDatabaseException(errMsg);
+        }
+
+        return entity;
+    }
 }

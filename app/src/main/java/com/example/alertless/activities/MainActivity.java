@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onChanged(List<ProfileDetailsEntity> profileDetailsEntities) {
                 List<ProfileDetailsModel> profileDetailsModels = profileDetailsEntities.stream()
-                        .map(ProfileDetailsModel::getModel)
+                        .map(ProfileDetailsEntity::getModel)
                         .collect(Collectors.toList());
 
                 profileListAdapter.setProfileDetails(profileDetailsModels);

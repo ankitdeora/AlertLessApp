@@ -29,7 +29,7 @@ import static com.example.alertless.utils.Constants.TIME_RANGE_TABLE;
 @EqualsAndHashCode
 @Entity(tableName = TIME_RANGE_TABLE,
         indices = {@Index(value = {START_MIN_COL, END_MIN_COL}, unique = true)})
-public class TimeRangeEntity {
+public class TimeRangeEntity extends BaseEntity {
     @NonNull
     @PrimaryKey
     private String id;
@@ -43,16 +43,11 @@ public class TimeRangeEntity {
     public TimeRangeEntity() {
     }
 
-    public static TimeRangeEntity getEntity(TimeRangeModel model, String timeRangeId) {
-        if (model == null) {
-            return null;
-        }
-
-        return TimeRangeEntity.builder()
-                    .id(timeRangeId)
-                    .startMin(model.getStartMin())
-                    .endMin(model.getEndMin())
+    @Override
+    public TimeRangeModel getModel() {
+        return TimeRangeModel.builder()
+                    .startMin(this.startMin)
+                    .endMin(this.endMin)
                 .build();
-
     }
 }

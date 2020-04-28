@@ -30,14 +30,14 @@ import static com.example.alertless.utils.Constants.WEEK_SCHEDULE_TABLE;
 @EqualsAndHashCode
 @Entity(tableName = WEEK_SCHEDULE_TABLE,
         foreignKeys = {
-                        @ForeignKey(entity = ScheduleEntity.class,
+                        @ForeignKey(entity = PartyEntity.class,
                                     parentColumns = ID,
                                     childColumns = WEEK_SCHEDULE_ID),
                         @ForeignKey(entity = DateRangeEntity.class,
                                     parentColumns = ID,
                                     childColumns = DATE_RANGE_FK)
                     },
-        indices = {@Index(value = {DATE_RANGE_FK, WEEK_SCHEDULE_ID}, unique = true)})
+        indices = {@Index(value = {DATE_RANGE_FK})})
 public class WeekScheduleEntity {
     @NonNull
     @PrimaryKey

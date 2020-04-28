@@ -1,7 +1,5 @@
 package com.example.alertless.utils;
 
-import com.example.alertless.models.TimeRangeModel;
-
 public class Constants {
     public static final String TAG_SUFFIX = ".tag";
     public static final String CURRENT_PROFILE = "CURRENT_PROFILE";
@@ -42,9 +40,13 @@ public class Constants {
     public static final String END_DATE_MS_COL = "end_date_ms";
     public static final String DATE_RANGE_FK ="date_range_id";
 
+    // Party Table
+    public static final String PARTY_TABLE = "party";
+    public static final String SCHEDULE_TYPE_COL = "schedule_type";
+    public static final String PARTY_ID_FK ="party_id";
+
     // Schedule Table
     public static final String SCHEDULE_TABLE = "schedule";
-    public static final String SCHEDULE_TYPE_COL = "schedule_type";
     public static final String SCHEDULE_ID_FK = "schedule_id";
 
     // WeekSchedule Table

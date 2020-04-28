@@ -159,16 +159,23 @@ public class SchedulerActivity extends AppCompatActivity {
     }
 
     public void showTimeRange(View v) throws AlertlessDatabaseException {
-        List<TimeRangeEntity> entities = repository.getAllTimeRangeEntities();
+        List<TimeRangeEntity> entities = repository.getAllEntities();
         Log.i(TAG, "============= SAVED TIME RANGES =============");
-        Log.i(TAG, entities.toString());
+        Log.i(TAG, entities.size() + " : SIZE : " + entities.toString());
         ToastUtils.showToast(getApplicationContext(), entities.toString());
     }
 
-    private void saveTimeRange() throws AlertlessDatabaseException {
+    private void saveTimeRange() {
+        String msg = "Schedule Saved !!!";
 
-        repository.insertTimeRange(this.timeRangeModel);
-        ToastUtils.showToast(getApplicationContext(), "Schedule Saved !!!");
+        try {
+            repository.createEntity(this.timeRangeModel);
+
+        } catch (AlertlessException e) {
+            msg = e.getMessage();
+            Log.i(TAG, msg);
+        }
+        ToastUtils.showToast(getApplicationContext(), msg);
     }
 
     private boolean isValidScheduleData() {

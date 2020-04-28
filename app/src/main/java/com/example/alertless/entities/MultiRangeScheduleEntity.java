@@ -27,7 +27,7 @@ import static com.example.alertless.utils.Constants.MULTI_RANGE_SCHEDULE_TABLE;
 @EqualsAndHashCode
 @Entity(tableName = MULTI_RANGE_SCHEDULE_TABLE,
         foreignKeys = {
-                @ForeignKey(entity = ScheduleEntity.class,
+                @ForeignKey(entity = PartyEntity.class,
                         parentColumns = ID,
                         childColumns = DATE_SCHEDULE_ID),
                 @ForeignKey(entity = DateRangeEntity.class,

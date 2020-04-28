@@ -7,10 +7,8 @@ import androidx.room.ForeignKey;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-import com.example.alertless.commons.ScheduleType;
 import com.example.alertless.entities.ProfileDetailsEntity;
 import com.example.alertless.entities.ScheduleEntity;
-import com.example.alertless.utils.Constants;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,7 +37,7 @@ import static com.example.alertless.utils.Constants.SCHEDULE_ID_FK;
                         parentColumns = ID,
                         childColumns = PROFILE_ID_FK)
         },
-        indices = {@Index(value = {SCHEDULE_ID_FK, PROFILE_ID_FK})})
+        indices = {@Index(value = {SCHEDULE_ID_FK})})
 public class ProfileScheduleRelation {
     @NonNull
     @PrimaryKey
