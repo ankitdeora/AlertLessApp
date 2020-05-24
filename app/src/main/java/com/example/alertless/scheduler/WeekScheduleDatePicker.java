@@ -13,6 +13,7 @@ import com.example.alertless.models.DateRangeModel;
 import com.example.alertless.models.WeekScheduleModel;
 import com.example.alertless.utils.Constants;
 import com.example.alertless.utils.ToastUtils;
+import com.example.alertless.utils.WeekUtils;
 
 import java.util.Calendar;
 
@@ -67,6 +68,8 @@ public class WeekScheduleDatePicker extends DialogFragment implements DatePicker
         date.set(Calendar.YEAR, year);
         date.set(Calendar.MONTH, month);
         date.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+        WeekUtils.setMsToBeginningOfDay(date);
 
         final long dateInMillis = date.getTimeInMillis();
 

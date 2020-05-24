@@ -4,7 +4,7 @@ import android.app.Application;
 
 import androidx.lifecycle.LiveData;
 
-import com.example.alertless.commons.ProfileState;
+import com.example.alertless.enums.ProfileState;
 import com.example.alertless.entities.ProfileDetailsEntity;
 import com.example.alertless.exceptions.AlertlessDatabaseException;
 import com.example.alertless.exceptions.AlertlessException;
@@ -61,13 +61,6 @@ public class ProfileDetailsRepository extends BaseRepository<ProfileDetailsEntit
 
     public void updateProfileDetails(CharSequence profileName, final ProfileState state) throws AlertlessException {
         updateProfileDetails(profileName, ProfileState.ACTIVE.equals(state));
-    }
-
-    public void deleteProfile(CharSequence name) throws AlertlessException {
-        ValidationUtils.validateInput(name);
-
-        ProfileDetailsModel model = ProfileDetailsModel.builder().name(name.toString()).build();
-        this.deleteEntity(model);
     }
 
     private ProfileDetailsEntity getEntityByName(CharSequence name) throws AlertlessException {

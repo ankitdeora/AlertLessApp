@@ -1,6 +1,6 @@
 package com.example.alertless.exceptions;
 
-public class AlertlessIllegalArgumentException extends AlertlessException {
+public class AlertlessIllegalArgumentException extends AlertlessRuntimeException {
 
     public AlertlessIllegalArgumentException() {
     }

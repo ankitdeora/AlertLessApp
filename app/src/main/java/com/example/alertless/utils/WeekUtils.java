@@ -15,20 +15,20 @@ It is assumed that in a byte weekdays are starting from left with sunday.
  */
 public class WeekUtils {
 
-    public static byte addWeekdays(byte week, MaterialDayPicker.Weekday... weekdays) {
+    public static byte addWeekdaysAndGetByte(byte week, MaterialDayPicker.Weekday... weekdays) {
         for (MaterialDayPicker.Weekday weekday : weekdays) {
             week |= 1 << weekday.ordinal();
         }
         return week;
     }
 
-    public static byte addWeekdays(MaterialDayPicker.Weekday... weekdays) {
+    public static byte getByte(MaterialDayPicker.Weekday... weekdays) {
         byte week = 0 << 0;
-        return addWeekdays(week, weekdays);
+        return addWeekdaysAndGetByte(week, weekdays);
     }
 
-    public static byte addWeekdays(List<MaterialDayPicker.Weekday> weekdays) {
-        return addWeekdays(weekdays.toArray(new MaterialDayPicker.Weekday[0]));
+    public static byte getByte(List<MaterialDayPicker.Weekday> weekdays) {
+        return getByte(weekdays.toArray(new MaterialDayPicker.Weekday[0]));
     }
 
     public static List<MaterialDayPicker.Weekday> getWeekdays(byte week) {
@@ -56,6 +56,8 @@ public class WeekUtils {
         }
 
         Calendar date = Calendar.getInstance();
+        // set values to beginning of day
+        setMsToBeginningOfDay(date);
 
         if (dateRangeModel.getStartDateMs() == 0) {
             long startDateMs = date.getTimeInMillis();
@@ -70,5 +72,12 @@ public class WeekUtils {
             dateRangeModel.setEndDateMs(endDateMs);
         }
 
+    }
+
+    public static void setMsToBeginningOfDay(Calendar date) {
+        date.set(Calendar.HOUR_OF_DAY, 0);
+        date.set(Calendar.MINUTE, 0);
+        date.set(Calendar.SECOND, 0);
+        date.set(Calendar.MILLISECOND, 0);
     }
 }

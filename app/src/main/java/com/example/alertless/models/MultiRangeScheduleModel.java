@@ -1,6 +1,6 @@
 package com.example.alertless.models;
 
-import com.example.alertless.commons.ScheduleType;
+import com.example.alertless.enums.ScheduleType;
 
 import java.util.List;
 
@@ -25,5 +25,13 @@ public class MultiRangeScheduleModel extends ScheduleModel {
     @Override
     public ScheduleType getType() {
         return ScheduleType.BY_DATE;
+    }
+
+    public boolean isRangeType() {
+        return dateRangeModels != null && dateRangeModels.size() == 1;
+    }
+
+    public boolean isManyDaysType() {
+        return dateRangeModels != null && dateRangeModels.size() > 1;
     }
 }

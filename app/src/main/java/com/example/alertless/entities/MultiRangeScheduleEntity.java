@@ -7,6 +7,9 @@ import androidx.room.ForeignKey;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
+import com.example.alertless.models.BaseModel;
+import com.example.alertless.models.MultiRangeScheduleDTO;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -29,16 +32,18 @@ import static com.example.alertless.utils.Constants.MULTI_RANGE_SCHEDULE_TABLE;
         foreignKeys = {
                 @ForeignKey(entity = PartyEntity.class,
                         parentColumns = ID,
-                        childColumns = DATE_SCHEDULE_ID),
+                        childColumns = DATE_SCHEDULE_ID,
+                        onUpdate = ForeignKey.CASCADE),
                 @ForeignKey(entity = DateRangeEntity.class,
                         parentColumns = ID,
-                        childColumns = DATE_RANGE_FK)
+                        childColumns = DATE_RANGE_FK,
+                        onUpdate = ForeignKey.CASCADE)
         },
         indices = {
                 @Index(value = {DATE_SCHEDULE_ID}),
                 @Index(value = {DATE_RANGE_FK})
         })
-public class MultiRangeScheduleEntity {
+public class MultiRangeScheduleEntity implements BaseEntity {
     @NonNull
     @PrimaryKey
     private String id;
@@ -52,5 +57,13 @@ public class MultiRangeScheduleEntity {
     private String dateRangeId;
 
     public MultiRangeScheduleEntity() {
+    }
+
+    @Override
+    public MultiRangeScheduleDTO getModel() {
+        return MultiRangeScheduleDTO.builder()
+                    .dateScheduleId(this.dateScheduleId)
+                    .dateRangeId(this.dateRangeId)
+                .build();
     }
 }

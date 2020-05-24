@@ -7,6 +7,8 @@ import androidx.room.ForeignKey;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
+import com.example.alertless.entities.BaseEntity;
+import com.example.alertless.entities.Identity;
 import com.example.alertless.entities.ProfileDetailsEntity;
 import com.example.alertless.entities.ScheduleEntity;
 
@@ -32,13 +34,15 @@ import static com.example.alertless.utils.Constants.SCHEDULE_ID_FK;
         foreignKeys = {
                 @ForeignKey(entity = ScheduleEntity.class,
                         parentColumns = ID,
-                        childColumns = SCHEDULE_ID_FK),
+                        childColumns = SCHEDULE_ID_FK,
+                        onUpdate = ForeignKey.CASCADE),
                 @ForeignKey(entity = ProfileDetailsEntity.class,
                         parentColumns = ID,
-                        childColumns = PROFILE_ID_FK)
+                        childColumns = PROFILE_ID_FK,
+                        onUpdate = ForeignKey.CASCADE)
         },
         indices = {@Index(value = {SCHEDULE_ID_FK})})
-public class ProfileScheduleRelation {
+public class ProfileScheduleRelation implements Identity {
     @NonNull
     @PrimaryKey
     @ColumnInfo(name = PROFILE_ID_FK)
@@ -49,5 +53,10 @@ public class ProfileScheduleRelation {
     private String scheduleId;
 
     public ProfileScheduleRelation() {
+    }
+
+    @Override
+    public String getId() {
+        return profileId;
     }
 }

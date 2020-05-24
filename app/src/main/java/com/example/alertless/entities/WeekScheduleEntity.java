@@ -7,6 +7,9 @@ import androidx.room.ForeignKey;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
+import com.example.alertless.models.BaseModel;
+import com.example.alertless.models.WeekScheduleDTO;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -32,13 +35,15 @@ import static com.example.alertless.utils.Constants.WEEK_SCHEDULE_TABLE;
         foreignKeys = {
                         @ForeignKey(entity = PartyEntity.class,
                                     parentColumns = ID,
-                                    childColumns = WEEK_SCHEDULE_ID),
+                                    childColumns = WEEK_SCHEDULE_ID,
+                                    onUpdate = ForeignKey.CASCADE),
                         @ForeignKey(entity = DateRangeEntity.class,
                                     parentColumns = ID,
-                                    childColumns = DATE_RANGE_FK)
+                                    childColumns = DATE_RANGE_FK,
+                                    onUpdate = ForeignKey.CASCADE)
                     },
         indices = {@Index(value = {DATE_RANGE_FK})})
-public class WeekScheduleEntity {
+public class WeekScheduleEntity implements BaseEntity {
     @NonNull
     @PrimaryKey
     @ColumnInfo(name = WEEK_SCHEDULE_ID)
@@ -52,5 +57,19 @@ public class WeekScheduleEntity {
     private String dateRangeId;
 
     public WeekScheduleEntity() {
+    }
+
+    @Override
+    public String getId() {
+        return weekScheduleId;
+    }
+
+    @Override
+    public WeekScheduleDTO getModel() {
+
+        return WeekScheduleDTO.builder()
+                    .weekdays(this.weekdays)
+                    .dateRangeId(this.dateRangeId)
+                .build();
     }
 }

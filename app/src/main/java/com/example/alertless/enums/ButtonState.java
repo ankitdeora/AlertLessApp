@@ -1,4 +1,4 @@
-package com.example.alertless.commons;
+package com.example.alertless.enums;
 
 public enum ButtonState {
     ENABLED, DISABLED

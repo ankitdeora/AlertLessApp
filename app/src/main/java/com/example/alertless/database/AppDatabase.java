@@ -8,8 +8,13 @@ import androidx.room.RoomDatabase;
 
 import com.example.alertless.database.dao.AppDetailsDao;
 import com.example.alertless.database.dao.DateRangeDao;
+import com.example.alertless.database.dao.MultiRangeScheduleDao;
+import com.example.alertless.database.dao.PartyDao;
 import com.example.alertless.database.dao.ProfileDao;
+import com.example.alertless.database.dao.ProfileScheduleDao;
+import com.example.alertless.database.dao.ScheduleDao;
 import com.example.alertless.database.dao.TimeRangeDao;
+import com.example.alertless.database.dao.WeekScheduleDao;
 import com.example.alertless.entities.AppDetailsEntity;
 import com.example.alertless.entities.DateRangeEntity;
 import com.example.alertless.entities.MultiRangeScheduleEntity;
@@ -62,16 +67,13 @@ public abstract class AppDatabase extends RoomDatabase {
     }
 
     public abstract ProfileDao getProfileDao();
+    public abstract ProfileScheduleDao getProfileScheduleDao();
     public abstract TimeRangeDao getTimeRangeDao();
     public abstract AppDetailsDao getAppDetailsDao();
     public abstract DateRangeDao getDateRangeDao();
+    public abstract ScheduleDao getScheduleDao();
+    public abstract WeekScheduleDao getWeekScheduleDao();
+    public abstract MultiRangeScheduleDao getMultiRangeScheduleDao();
+    public abstract PartyDao getPartyDao();
 
-//    public BaseDao getDao(Class clazz) {
-//
-//        if (clazz.getName().equals(TimeRangeDao.class.getName())) {
-//            return getTimeRangeDao();
-//        } else {
-//            return null;
-//        }
-//    }
 }

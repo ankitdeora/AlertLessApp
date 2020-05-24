@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import ca.antonious.materialdaypicker.MaterialDayPicker;
 
@@ -84,15 +85,15 @@ public class ExampleUnitTest {
     @Test
     public void testBitSet() {
         byte test = 1 << 0; // set SUNDAY by default
-        test = WeekUtils.addWeekdays(test, MaterialDayPicker.Weekday.SATURDAY);
+        test = WeekUtils.addWeekdaysAndGetByte(test, MaterialDayPicker.Weekday.SATURDAY);
         Assert.assertEquals(65, test);
         System.out.println(WeekUtils.getWeekdays(test));
 
-        test = WeekUtils.addWeekdays(test, MaterialDayPicker.Weekday.MONDAY);
+        test = WeekUtils.addWeekdaysAndGetByte(test, MaterialDayPicker.Weekday.MONDAY);
         Assert.assertEquals(67, test);
         System.out.println(WeekUtils.getWeekdays(test));
 
-        test = WeekUtils.addWeekdays(MaterialDayPicker.Weekday.SUNDAY, MaterialDayPicker.Weekday.MONDAY, MaterialDayPicker.Weekday.TUESDAY);
+        test = WeekUtils.getByte(MaterialDayPicker.Weekday.SUNDAY, MaterialDayPicker.Weekday.MONDAY, MaterialDayPicker.Weekday.TUESDAY);
         Assert.assertEquals(7, test);
         System.out.println(WeekUtils.getWeekdays(test));
     }
@@ -186,6 +187,11 @@ public class ExampleUnitTest {
         daysBetween.forEach(cal -> System.out.println(cal.getTime()));
 
         assertEquals(9, daysBetween.size());
+    }
+
+    @Test
+    public void testUniqueId() {
+        System.out.println(UUID.randomUUID());
     }
 
 }

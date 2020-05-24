@@ -55,4 +55,7 @@ dependencies {
 
     // Recycler view for list
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
+
+    // Random Id generator
+    implementation 'org.apache.commons:commons-lang3:3.9'
 }

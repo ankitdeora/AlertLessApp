@@ -13,8 +13,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.alertless.R;
-import com.example.alertless.commons.ButtonState;
+import com.example.alertless.enums.ButtonState;
 import com.example.alertless.database.repositories.ProfileDetailsRepository;
+import com.example.alertless.database.repositories.ProfileRepository;
 import com.example.alertless.exceptions.AlertlessDatabaseException;
 import com.example.alertless.exceptions.AlertlessException;
 import com.example.alertless.models.Profile;
@@ -33,7 +34,8 @@ public class ProfileEditActivity extends AppCompatActivity {
     public static final int LAUNCH_SCHEDULER_ACTIVITY = 1;
 
     private Profile currentProfile;
-    private ProfileDetailsRepository profileDetailsRepository;
+    private ProfileRepository profileRepository = ProfileRepository.getInstance(getApplication());
+    private ProfileDetailsRepository profileDetailsRepository = ProfileDetailsRepository.getInstance(getApplication());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,9 +59,6 @@ public class ProfileEditActivity extends AppCompatActivity {
 
             setButtonsState(ButtonState.DISABLED);
         }
-
-        // Init userRepository
-        profileDetailsRepository = ProfileDetailsRepository.getInstance(getApplication());
     }
 
     private void updateProfileTextView() {
@@ -168,7 +167,7 @@ public class ProfileEditActivity extends AppCompatActivity {
 
         // TODO: show dialog for user to confirm if he/she really wants to delete?
         try {
-            profileDetailsRepository.deleteProfile(profileName);
+            profileRepository.deleteProfile(profileName);
             ToastUtils.showToast(getApplicationContext(),"Deleted Profile : " + profileName);
 
             finish();

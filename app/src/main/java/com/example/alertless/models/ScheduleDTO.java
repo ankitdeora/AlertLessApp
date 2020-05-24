@@ -1,10 +1,8 @@
 package com.example.alertless.models;
 
-import com.example.alertless.entities.ProfileDetailsEntity;
+import com.example.alertless.entities.ScheduleEntity;
 import com.example.alertless.exceptions.AlertlessIllegalArgumentException;
 import com.example.alertless.utils.ValidationUtils;
-
-import java.io.Serializable;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,22 +15,22 @@ import lombok.ToString;
 @Getter
 @Setter
 @AllArgsConstructor
-@RequiredArgsConstructor
 @ToString
 @Builder
-@EqualsAndHashCode (callSuper = false)
-public class ProfileDetailsModel  implements BaseModel, Serializable {
-    private String name;
-    private boolean active;
+@EqualsAndHashCode(callSuper = false)
+public class ScheduleDTO implements BaseModel {
+
+    private String partyId;
+    private String timeRangeId;
 
     @Override
-    public ProfileDetailsEntity getEntity(String id) throws AlertlessIllegalArgumentException {
+    public ScheduleEntity getEntity(String id) throws AlertlessIllegalArgumentException {
         ValidationUtils.validateInput(id);
 
-        return ProfileDetailsEntity.builder()
+        return ScheduleEntity.builder()
                     .id(id)
-                    .name(this.name)
-                    .active(this.active)
+                    .partyId(this.partyId)
+                    .timeRangeId(this.timeRangeId)
                 .build();
     }
 }

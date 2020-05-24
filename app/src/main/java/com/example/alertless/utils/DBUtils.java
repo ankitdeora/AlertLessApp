@@ -7,6 +7,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -32,7 +33,12 @@ public class DBUtils {
     }
 
     public static <T,R> R executeTaskAndGet(Function<T,R> fn, T val, String errMsg) throws AlertlessDatabaseException {
-        Supplier<R> supplier = FunctionUtils.bind(fn, val);
+        Supplier<R> supplier = () -> fn.apply(val);
+        return executeTaskAndGet(supplier, errMsg);
+    }
+
+    public static <T,U,R> R executeTaskAndGet(BiFunction<T, U, R> biFn, T inputA, U inputB, String errMsg) throws AlertlessDatabaseException {
+        Supplier<R> supplier = () -> biFn.apply(inputA, inputB);
         return executeTaskAndGet(supplier, errMsg);
     }
 
@@ -73,7 +79,7 @@ public class DBUtils {
     }
 
     public static <T, R> Callable<R> getDBTask(Function<T,R> fn, T val) {
-        return getDBCallableTask(FunctionUtils.bind(fn, val));
+        return getDBCallableTask(() -> fn.apply(val));
     }
 }
 

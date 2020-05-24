@@ -92,7 +92,7 @@ public class DateRangeUtils {
         return calendarDates;
     }
 
-    private static List<Calendar> getDaysBetween(long startDateMs, long endDateMs) {
+    public static List<Calendar> getDaysBetween(long startDateMs, long endDateMs) {
         return getDaysBetween(new Date(startDateMs), new Date(endDateMs));
     }
 

@@ -26,10 +26,10 @@ import static com.example.alertless.utils.Constants.TIME_RANGE_TABLE;
 @RequiredArgsConstructor
 @ToString
 @Builder
-@EqualsAndHashCode
+@EqualsAndHashCode (callSuper = false)
 @Entity(tableName = TIME_RANGE_TABLE,
         indices = {@Index(value = {START_MIN_COL, END_MIN_COL}, unique = true)})
-public class TimeRangeEntity extends BaseEntity {
+public class TimeRangeEntity implements BaseEntity {
     @NonNull
     @PrimaryKey
     private String id;

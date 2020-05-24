@@ -6,6 +6,8 @@ public class Constants {
     public static final String SCHEDULE_RESULT = "SCHEDULE_RESULT";
     public static final String SCHEDULE_ERROR = "SCHEDULE_ERROR";
 
+    public static final int UNIQUE_ID_LENGTH = 15;
+
     // Time tags
     public static final String START_TIME_TAG = "START_TIME_TAG";
     public static final String END_TIME_TAG = "END_TIME_TAG";

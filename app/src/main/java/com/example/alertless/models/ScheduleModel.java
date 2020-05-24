@@ -1,6 +1,6 @@
 package com.example.alertless.models;
 
-import com.example.alertless.commons.ScheduleType;
+import com.example.alertless.enums.ScheduleType;
 
 import java.io.Serializable;
 
@@ -22,5 +22,14 @@ import lombok.experimental.SuperBuilder;
 public abstract class ScheduleModel implements Serializable {
 
     private TimeRangeModel timeRangeModel;
+
     public abstract ScheduleType getType();
+
+    public boolean isWeekType() {
+        return ScheduleType.BY_WEEK.equals(getType());
+    }
+
+    public boolean isDateType() {
+        return ScheduleType.BY_DATE.equals(getType());
+    }
 }

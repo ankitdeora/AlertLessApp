@@ -28,10 +28,10 @@ import static com.example.alertless.utils.Constants.PROFILE_NAME_COL;
 @RequiredArgsConstructor
 @ToString
 @Builder
-@EqualsAndHashCode
+@EqualsAndHashCode (callSuper = false)
 @Entity(tableName = PROFILE_DETAILS_TABLE,
         indices = {@Index(value = {PROFILE_NAME_COL}, unique = true)})
-public class ProfileDetailsEntity extends BaseEntity implements Serializable {
+public class ProfileDetailsEntity implements BaseEntity, Serializable {
 
     @NonNull
     @PrimaryKey

@@ -6,6 +6,9 @@ import androidx.room.Entity;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
+import com.example.alertless.models.BaseModel;
+import com.example.alertless.models.DateRangeModel;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -27,7 +30,7 @@ import static com.example.alertless.utils.Constants.START_DATE_MS_COL;
 @EqualsAndHashCode
 @Entity(tableName = DATE_RANGE_TABLE,
         indices = {@Index(value = {START_DATE_MS_COL, END_DATE_MS_COL}, unique = true)})
-public class DateRangeEntity {
+public class DateRangeEntity implements BaseEntity {
     @NonNull
     @PrimaryKey
     private String id;
@@ -39,5 +42,13 @@ public class DateRangeEntity {
     private long endDateMs;
 
     public DateRangeEntity() {
+    }
+
+    @Override
+    public DateRangeModel getModel() {
+        return DateRangeModel.builder()
+                    .startDateMs(this.startDateMs)
+                    .endDateMs(this.endDateMs)
+                .build();
     }
 }

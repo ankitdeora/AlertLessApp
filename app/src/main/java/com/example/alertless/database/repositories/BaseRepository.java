@@ -5,16 +5,18 @@ import android.app.Application;
 import com.example.alertless.database.AppDatabase;
 import com.example.alertless.database.dao.BaseDao;
 import com.example.alertless.entities.BaseEntity;
+import com.example.alertless.entities.Identity;
 import com.example.alertless.exceptions.AlertlessDatabaseException;
 import com.example.alertless.exceptions.AlertlessException;
 import com.example.alertless.models.BaseModel;
 import com.example.alertless.utils.DBUtils;
+import com.example.alertless.utils.StringUtils;
 import com.example.alertless.utils.ValidationUtils;
 
-import java.util.Date;
 import java.util.List;
 
-public abstract class BaseRepository<Entity extends BaseEntity, Model extends BaseModel> {
+
+public abstract class BaseRepository<Entity extends Identity, Model extends BaseModel> implements IRepository<Entity, Model>{
 
     protected final AppDatabase appDatabase;
     protected BaseDao<Entity, Model> dao;
@@ -27,21 +29,37 @@ public abstract class BaseRepository<Entity extends BaseEntity, Model extends Ba
         return DBUtils.executeTaskAndGet(dao::findAllEntities, "Could not get all entities !!!");
     }
 
-    protected Entity getEntity(Model model) throws AlertlessException {
+    public Entity getEntity(Model model) throws AlertlessException {
         ValidationUtils.validateInput(model);
 
         String errMsg = String.format("Could not get DB Entity for model : %s !!!", model);
         return DBUtils.executeTaskAndGet(dao::findEntity, model, errMsg);
     }
 
-    protected Entity getEntity(String id) throws AlertlessException {
+    public Entity getEntity(String id) throws AlertlessException {
         ValidationUtils.validateInput(id);
 
         String errMsg = String.format("Could not get Entity with id : %s !!!", id);
         return DBUtils.executeTaskAndGet(dao::findEntity, id, errMsg);
     }
 
-    public void createEntity(Model model) throws AlertlessException {
+    public Entity getOrCreateEntity(Model model) throws AlertlessException {
+        Entity entity = getEntity(model);
+
+        if (entity != null) {
+            return entity;
+        }
+
+        String uniqueId = StringUtils.getUniqueId();
+        entity = model.getEntity(uniqueId);
+
+        String errMsg = String.format("Error while creating Entity for model : %s !!!", model);
+        DBUtils.executeTask(dao::insert, entity, errMsg);
+
+        return entity;
+    }
+
+    public Entity createEntity(Model model) throws AlertlessException {
         ValidationUtils.validateInput(model);
         final Entity existingEntity = getEntity(model);
 
@@ -50,12 +68,13 @@ public abstract class BaseRepository<Entity extends BaseEntity, Model extends Ba
             throw new AlertlessDatabaseException(errMsg);
         }
 
-        String uniqueId = String.valueOf(new Date().getTime());
-
+        String uniqueId = StringUtils.getUniqueId();
         Entity entity = model.getEntity(uniqueId);
 
         String errMsg = String.format("Error while creating Entity for model : %s !!!", model);
         DBUtils.executeTask(dao::insert, entity, errMsg);
+
+        return entity;
     }
 
     public void updateEntity(String id, Model updatedModel) throws AlertlessException {

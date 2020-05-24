@@ -6,6 +6,9 @@ import androidx.room.Entity;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
+import com.example.alertless.models.AppDetailsModel;
+import com.example.alertless.models.BaseModel;
+
 import java.io.Serializable;
 
 import lombok.AllArgsConstructor;
@@ -28,7 +31,7 @@ import static com.example.alertless.utils.Constants.PACKAGE_NAME_COL;
 @EqualsAndHashCode
 @Entity(tableName = APP_DETAILS_TABLE,
         indices = {@Index(value = {PACKAGE_NAME_COL}, unique = true)})
-public class AppDetailsEntity implements Serializable {
+public class AppDetailsEntity implements BaseEntity, Serializable {
     @NonNull
     @PrimaryKey
     private String id;
@@ -42,5 +45,13 @@ public class AppDetailsEntity implements Serializable {
     private String packageName;
 
     public AppDetailsEntity() {
+    }
+
+    @Override
+    public AppDetailsModel getModel() {
+        return AppDetailsModel.builder()
+                    .appName(this.appName)
+                    .packageName(this.packageName)
+                .build();
     }
 }

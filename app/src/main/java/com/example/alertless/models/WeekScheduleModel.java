@@ -1,6 +1,6 @@
 package com.example.alertless.models;
 
-import com.example.alertless.commons.ScheduleType;
+import com.example.alertless.enums.ScheduleType;
 
 import java.util.List;
 

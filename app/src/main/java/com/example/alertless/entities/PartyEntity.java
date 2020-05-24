@@ -22,7 +22,7 @@ import static com.example.alertless.utils.Constants.SCHEDULE_TYPE_COL;
 @Builder
 @EqualsAndHashCode
 @Entity(tableName = PARTY_TABLE)
-public class PartyEntity {
+public class PartyEntity implements Identity{
     @NonNull
     @PrimaryKey
     private String id;

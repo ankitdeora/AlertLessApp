@@ -7,6 +7,9 @@ import androidx.room.ForeignKey;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
+import com.example.alertless.models.BaseModel;
+import com.example.alertless.models.ScheduleDTO;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -29,16 +32,18 @@ import static com.example.alertless.utils.Constants.TIME_RANGE_FK;
         foreignKeys = {
                 @ForeignKey(entity = TimeRangeEntity.class,
                         parentColumns = ID,
-                        childColumns = TIME_RANGE_FK),
+                        childColumns = TIME_RANGE_FK,
+                        onUpdate = ForeignKey.CASCADE),
                 @ForeignKey(entity = PartyEntity.class,
                         parentColumns = ID,
-                        childColumns = PARTY_ID_FK)
+                        childColumns = PARTY_ID_FK,
+                        onUpdate = ForeignKey.CASCADE)
         },
         indices = {
                 @Index(value = {TIME_RANGE_FK}),
                 @Index(value = {PARTY_ID_FK})
         })
-public class ScheduleEntity {
+public class ScheduleEntity implements BaseEntity {
 
     @NonNull
     @PrimaryKey
@@ -53,5 +58,14 @@ public class ScheduleEntity {
     private String timeRangeId;
 
     public ScheduleEntity() {
+    }
+
+    @Override
+    public ScheduleDTO getModel() {
+        return ScheduleDTO.builder()
+                    .partyId(this.partyId)
+                    .timeRangeId(this.timeRangeId)
+                .build();
+
     }
 }
