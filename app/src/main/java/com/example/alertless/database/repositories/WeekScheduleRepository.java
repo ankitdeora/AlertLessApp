@@ -10,20 +10,13 @@ import com.example.alertless.database.dao.ScheduleDao;
 import com.example.alertless.database.dao.WeekScheduleDao;
 import com.example.alertless.entities.MultiRangeScheduleEntity;
 import com.example.alertless.entities.PartyEntity;
-import com.example.alertless.entities.ScheduleEntity;
 import com.example.alertless.entities.WeekScheduleEntity;
 import com.example.alertless.entities.relations.ProfileScheduleRelation;
 import com.example.alertless.exceptions.AlertlessDatabaseException;
-import com.example.alertless.exceptions.AlertlessException;
-import com.example.alertless.models.ScheduleModel;
 import com.example.alertless.models.WeekScheduleDTO;
-import com.example.alertless.models.WeekScheduleModel;
 import com.example.alertless.utils.DBUtils;
-import com.example.alertless.utils.ValidationUtils;
 
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 
 
 public class WeekScheduleRepository extends BaseRepository<WeekScheduleEntity, WeekScheduleDTO> {
@@ -69,11 +62,6 @@ public class WeekScheduleRepository extends BaseRepository<WeekScheduleEntity, W
         return INSTANCE;
     }
 
-    public Object executeRawQuery(String query) throws AlertlessDatabaseException {
-        String errMsg = String.format("error executing raw query : %s", query);
-        return DBUtils.executeTaskAndGet(this.multiRangeScheduleDao::executeRawQuery, query, errMsg);
-    }
-
     public void listAllEntities() throws AlertlessDatabaseException {
         Log.i("PRINTING-ALL-DATA", "*************** PRINTING-ALL-DATA ***************");
 
@@ -109,110 +97,6 @@ public class WeekScheduleRepository extends BaseRepository<WeekScheduleEntity, W
                 multiScheduleEntities.toString()));
 
 
-    }
-
-    public ScheduleEntity getOrCreateSchedule(WeekScheduleModel weekScheduleModel) throws AlertlessException, ExecutionException, InterruptedException {
-        ValidationUtils.validateInput(weekScheduleModel);
-
-        Callable<ScheduleEntity> callable = new Callable<ScheduleEntity>() {
-            @Override
-            public ScheduleEntity call() throws Exception {
-                /*
-                TimeRangeModel timeRangeModel = weekScheduleModel.getTimeRangeModel();
-                TimeRangeEntity timeRangeEntity = timeRangeRepository.getOrCreateEntity(timeRangeModel);
-                String timeRangeId = timeRangeEntity.getId();
-
-                DateRangeModel dateRangeModel = weekScheduleModel.getDateRangeModel();
-                DateRangeEntity dateRangeEntity = dateRangeRepository.getOrCreateEntity(dateRangeModel);
-                String dateRangeId = dateRangeEntity.getId();
-
-                List<MaterialDayPicker.Weekday> weekdays = weekScheduleModel.getWeekdays();
-                byte weekByte = WeekUtils.getByte(weekdays);
-
-                WeekScheduleDTO weekScheduleDTO = WeekScheduleDTO.builder()
-                        .weekdays(weekByte)
-                        .dateRangeId(dateRangeId)
-                        .build();
-
-                WeekScheduleEntity weekScheduleEntity = getEntity(weekScheduleDTO);
-                String weekScheduleId = null;
-
-                if (weekScheduleEntity != null) {
-                    weekScheduleId = weekScheduleEntity.getWeekScheduleId();
-                } else {
-                    weekScheduleId = getUniqueId();
-
-                    PartyEntity partyEntity = PartyEntity.builder()
-                            .id(weekScheduleId)
-                            .scheduleType(ScheduleType.BY_WEEK.name())
-                            .build();
-                    String errMsg = String.format("Could not insert Party : %s", partyEntity);
-                    DBUtils.executeTask(partyDao::insert, partyEntity, errMsg);
-
-                    weekScheduleEntity = weekScheduleDTO.getEntity(weekScheduleId);
-                    DBUtils.executeTask(weekScheduleDao::insert, weekScheduleEntity, "Could not insert week schedule");
-                }
-
-                ScheduleDTO scheduleDTO = ScheduleDTO.builder()
-                        .partyId(weekScheduleId)
-                        .timeRangeId(timeRangeId)
-                        .build();
-                return scheduleRepository.getOrCreateEntity(scheduleDTO);
-
-                 */
-
-                /*
-                List<MaterialDayPicker.Weekday> weekdays = weekScheduleModel.getWeekdays();
-                byte weekByte = WeekUtils.getByte(weekdays);
-
-                String dateRangeId = getUniqueId();
-                DateRangeEntity dateRangeEntity = DateRangeEntity.builder()
-                                                    .id(dateRangeId)
-                                                    .startDateMs(new Date().getTime())
-                                                    .endDateMs(new Date().getTime())
-                                                .build();
-                appDatabase.getDateRangeDao().insert(dateRangeEntity);
-
-                WeekScheduleDTO weekScheduleDTO = WeekScheduleDTO.builder()
-                        .weekdays(weekByte)
-                        .dateRangeId(dateRangeId)
-                        .build();
-
-                String weekScheduleId = getUniqueId();
-
-                PartyEntity partyEntity = PartyEntity.builder()
-                        .id(weekScheduleId)
-                        .scheduleType(ScheduleType.BY_WEEK.name())
-                        .build();
-
-                partyDao.insert(partyEntity);
-
-                WeekScheduleEntity weekScheduleEntity = weekScheduleDTO.getEntity(weekScheduleId);
-                weekScheduleDao.insert(weekScheduleEntity);
-
-                return ScheduleEntity.builder()
-                        .id(weekScheduleId)
-                        .timeRangeId(weekScheduleId)
-                        .partyId(weekScheduleId)
-                        .build();
-
-                 */
-
-
-                ScheduleEntity scheduleEntity = null;
-                try {
-                    scheduleEntity = scheduleDao.findEntity("VU8adfKJyXrNh8D");
-                    ScheduleModel scheduleModel = scheduleDao.findCompleteSchedule("VU8adfKJyXrNh8D");
-                    Log.i("-------COMPLETE-SCHEDULE--------", scheduleModel.toString());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                return scheduleEntity;
-            }
-        };
-
-        return DBUtils.executeTaskAndGet(appDatabase::runInTransaction, callable, "could not execute transaction");
     }
 
 }

@@ -81,16 +81,6 @@ public abstract class MultiRangeScheduleDao extends BaseDao<MultiRangeScheduleEn
         return findScheduleForDateRangesRawQuery(simpleSQLiteQuery);
     }
 
-
-
-    @RawQuery
-    protected abstract String executeRawQueryDao(SupportSQLiteQuery query);
-
-    public Object executeRawQuery(String query) {
-        SimpleSQLiteQuery simpleSQLiteQuery = new SimpleSQLiteQuery(query);
-        return executeRawQueryDao(simpleSQLiteQuery);
-    }
-
     @Override
     public MultiRangeScheduleEntity findEntity(MultiRangeScheduleDTO multiRangeScheduleDTO) {
         if (multiRangeScheduleDTO == null) {

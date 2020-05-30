@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getName() + Constants.TAG_SUFFIX;
-    private WeekScheduleRepository weekScheduleRepository;
     private ProfileViewModel profileViewModel;
 
     @Override
@@ -49,8 +48,6 @@ public class MainActivity extends AppCompatActivity {
                 profileListAdapter.setProfileDetails(profileDetailsModels);
             }
         });
-
-        weekScheduleRepository = WeekScheduleRepository.getInstance(getApplication());
     }
 
 
@@ -67,15 +64,4 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, ProfileEditActivity.class);
         startActivity(intent);
     }
-
-    public void executeQuery(View view) throws AlertlessDatabaseException {
-        EditText queryText = findViewById(R.id.query_text_id);
-        String query = queryText.getText().toString();
-        Object result = weekScheduleRepository.executeRawQuery(query);
-        Log.i(TAG, "########### query result ###########");
-        Log.i(TAG, result.getClass().getName());
-        Log.i(TAG, result.toString());
-    }
-
-
 }
