@@ -7,6 +7,7 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
 import com.example.alertless.database.dao.AppDetailsDao;
+import com.example.alertless.database.dao.CommonScheduleDao;
 import com.example.alertless.database.dao.DateRangeDao;
 import com.example.alertless.database.dao.MultiRangeScheduleDao;
 import com.example.alertless.database.dao.PartyDao;
@@ -75,5 +76,6 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract WeekScheduleDao getWeekScheduleDao();
     public abstract MultiRangeScheduleDao getMultiRangeScheduleDao();
     public abstract PartyDao getPartyDao();
+    public abstract CommonScheduleDao getCommonScheduleDao();
 
 }

@@ -60,7 +60,6 @@ public class SchedulerActivity extends AppCompatActivity {
     private WeekScheduleModel weekSchedule;
     private Map<DatePickerType, MultiRangeScheduleModel> multiRangeScheduleMap;
     private DatePickerType datePickerType;
-    private ScheduleModel currentSchedule;
     private Profile currentProfile;
 
     @Override
@@ -80,15 +79,12 @@ public class SchedulerActivity extends AppCompatActivity {
 
         String profileName = this.currentProfile.getDetails().getName();
         try {
-            this.currentSchedule = this.profileRepository.getSchedule(profileName);
+            this.setCurrentSchedule(this.profileRepository.getSchedule(profileName));
         } catch (AlertlessDatabaseException e) {
             finishActivityWithErr(e.getMessage());
         }
 
         initScheduleStates();
-
-        // Set schedule in profile
-        currentProfile.setSchedule(this.currentSchedule);
     }
 
     private void loadWeekView() {
@@ -119,7 +115,7 @@ public class SchedulerActivity extends AppCompatActivity {
 
     private void initScheduleStates() {
 
-        Optional<ScheduleModel> optionalCurrentSchedule = Optional.ofNullable(this.currentSchedule);
+        Optional<ScheduleModel> optionalCurrentSchedule = Optional.ofNullable(this.getCurrentSchedule());
 
         // init time range model
         this.timeRangeModel = optionalCurrentSchedule.map(ScheduleModel::getTimeRangeModel)
@@ -155,11 +151,11 @@ public class SchedulerActivity extends AppCompatActivity {
                 .filter(MultiRangeScheduleModel::isRangeType).isPresent() ? RANGE : MANY_DAYS;
 
         // if current schedule not set
-        this.currentSchedule = optionalCurrentSchedule.orElse(this.weekSchedule);
+        this.setCurrentSchedule(optionalCurrentSchedule.orElse(this.weekSchedule));
 
-        if (ScheduleType.BY_WEEK.equals(this.currentSchedule.getType())) {
+        if (ScheduleType.BY_WEEK.equals(this.getCurrentSchedule().getType())) {
             loadWeekView();
-        } else if (ScheduleType.BY_DATE.equals(this.currentSchedule.getType())) {
+        } else if (ScheduleType.BY_DATE.equals(this.getCurrentSchedule().getType())) {
             if (MANY_DAYS.equals(this.datePickerType)) {
                 loadManyDateView();
             } else if (RANGE.equals(this.datePickerType)) {
@@ -171,7 +167,7 @@ public class SchedulerActivity extends AppCompatActivity {
             }
         } else {
             String errMsg = String.format("Schedule type %s NOT supported, only %s are allowed",
-                    this.currentSchedule.getType().name(), ScheduleType.values());
+                    this.getCurrentSchedule().getType().name(), ScheduleType.values());
             finishActivityWithErr(errMsg);
         }
     }
@@ -188,19 +184,19 @@ public class SchedulerActivity extends AppCompatActivity {
 
     private void populateWeekDaySchedule() {
 
-        WeekScheduleModel currentWeekSchedule = (WeekScheduleModel) this.currentSchedule;
+        WeekScheduleModel currentWeekSchedule = (WeekScheduleModel) this.getCurrentSchedule();
 
         // Set Date Range if not present
         WeekUtils.checkAndSetDateRangeInWeekSchedule(currentWeekSchedule);
     }
 
     private void populateSelectedSchedule() {
-        this.currentSchedule.setTimeRangeModel(this.timeRangeModel);
+        this.getCurrentSchedule().setTimeRangeModel(this.timeRangeModel);
 
-        if (ScheduleType.BY_WEEK.equals(this.currentSchedule.getType())) {
+        if (ScheduleType.BY_WEEK.equals(this.getCurrentSchedule().getType())) {
             populateWeekDaySchedule();
 
-        } else if (ScheduleType.BY_DATE.equals(this.currentSchedule.getType())) {
+        } else if (ScheduleType.BY_DATE.equals(this.getCurrentSchedule().getType())) {
             // Date schedule is already populated on selecting dates
         } else {
             ToastUtils.showToast(getApplicationContext(), "No Schedule Type Selected !!!");
@@ -218,12 +214,12 @@ public class SchedulerActivity extends AppCompatActivity {
 
         try {
             populateSelectedSchedule();
-            Log.i(TAG, this.currentSchedule.toString());
+            Log.i(TAG, this.getCurrentSchedule().toString());
 
             // TODO: remove save time range
             saveProfileSchedule();
 
-            returnIntent.putExtra(Constants.SCHEDULE_RESULT, this.currentSchedule);
+            returnIntent.putExtra(Constants.SCHEDULE_RESULT, this.getCurrentSchedule());
             setResult(Activity.RESULT_OK, returnIntent);
 
         } catch (Exception e) {
@@ -257,7 +253,7 @@ public class SchedulerActivity extends AppCompatActivity {
     }
 
     private boolean isValidScheduleData() {
-        if (ScheduleType.BY_WEEK.equals(this.currentSchedule.getType())) {
+        if (ScheduleType.BY_WEEK.equals(this.getCurrentSchedule().getType())) {
 
             MaterialDayPicker weekDayPicker = findViewById(R.id.week_day_picker);
             List<MaterialDayPicker.Weekday> selectedWeekDays = weekDayPicker.getSelectedDays();
@@ -267,9 +263,9 @@ public class SchedulerActivity extends AppCompatActivity {
                 showAlertDialog("No Schedule Selection", "Please select at least one weekday !!!");
                 return false;
             }
-        } else if (ScheduleType.BY_DATE.equals(this.currentSchedule.getType())) {
+        } else if (ScheduleType.BY_DATE.equals(this.getCurrentSchedule().getType())) {
 
-            MultiRangeScheduleModel dateScheduleModel = (MultiRangeScheduleModel) this.currentSchedule;
+            MultiRangeScheduleModel dateScheduleModel = (MultiRangeScheduleModel) this.getCurrentSchedule();
             if (dateScheduleModel.getDateRangeModels() == null) {
                 showAlertDialog("No Schedule Selection", "Please select at least one date !!!");
                 return false;
@@ -299,23 +295,23 @@ public class SchedulerActivity extends AppCompatActivity {
     }
 
     public void showWeekScheduleStartDatePickerDialog(View v) {
-        DialogFragment dateFragment = new WeekScheduleDatePicker((WeekScheduleModel) this.currentSchedule);
+        DialogFragment dateFragment = new WeekScheduleDatePicker((WeekScheduleModel) this.getCurrentSchedule());
         dateFragment.show(getSupportFragmentManager(), Constants.START_DATE_TAG);
     }
 
     public void showWeekScheduleEndDatePickerDialog(View v) {
-        DialogFragment dateFragment = new WeekScheduleDatePicker((WeekScheduleModel) this.currentSchedule);
+        DialogFragment dateFragment = new WeekScheduleDatePicker((WeekScheduleModel) this.getCurrentSchedule());
         dateFragment.show(getSupportFragmentManager(), Constants.END_DATE_TAG);
     }
 
     public void onIndividualDatePickerRadioSelection(View v) {
         this.datePickerType = MANY_DAYS;
-        this.currentSchedule = this.multiRangeScheduleMap.get(MANY_DAYS);
+        this.setCurrentSchedule(this.multiRangeScheduleMap.get(MANY_DAYS));
     }
 
     public void onRangeDatePickerRadioSelection(View v) {
         this.datePickerType = RANGE;
-        this.currentSchedule = this.multiRangeScheduleMap.get(RANGE);
+        this.setCurrentSchedule(this.multiRangeScheduleMap.get(RANGE));
     }
 
     public void showMultipleDatePicker(View v) {
@@ -359,7 +355,7 @@ public class SchedulerActivity extends AppCompatActivity {
         // switch view to week selector
         getLayoutInflater().inflate(R.layout.week_selector, switchLayout);
 
-        this.currentSchedule = this.weekSchedule;
+        this.setCurrentSchedule(this.weekSchedule);
 
         MaterialDayPicker weekdayPicker = findViewById(R.id.week_day_picker);
         weekdayPicker.setDaySelectionChangedListener(this.weekSchedule::setWeekdays);
@@ -382,6 +378,14 @@ public class SchedulerActivity extends AppCompatActivity {
         int datePickerRadioBtnId = RANGE.equals(this.datePickerType) ? R.id.range_selector_radio : R.id.individual_selector_radio ;
         dateSelectorRadioGroup.check(datePickerRadioBtnId);
 
-        this.currentSchedule = this.multiRangeScheduleMap.get(this.datePickerType);
+        this.setCurrentSchedule(this.multiRangeScheduleMap.get(this.datePickerType));
+    }
+
+    private ScheduleModel getCurrentSchedule() {
+        return this.currentProfile.getSchedule();
+    }
+
+    private void setCurrentSchedule(ScheduleModel scheduleModel) {
+        this.currentProfile.setSchedule(scheduleModel);
     }
 }

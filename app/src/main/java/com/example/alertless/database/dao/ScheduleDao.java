@@ -192,12 +192,38 @@ public abstract class ScheduleDao extends BaseDao<ScheduleEntity, ScheduleDTO> {
         PartyEntity updatedPartyEntity;
         if (ScheduleType.BY_WEEK.equals(scheduleType)) {
 
-            WeekScheduleModel requestedWeekDaySchedule = (WeekScheduleModel) requestedSchedule;
-            updatedPartyEntity = this.weekScheduleDao.findOrUpdateWeekSchedule(partyId, requestedWeekDaySchedule, partyReferredByOther);
+            if (requestedSchedule instanceof WeekScheduleModel) {
+                WeekScheduleModel requestedWeekDaySchedule = (WeekScheduleModel) requestedSchedule;
+                updatedPartyEntity = this.weekScheduleDao.findOrUpdateWeekSchedule(partyId, requestedWeekDaySchedule, partyReferredByOther);
+
+            } else if (requestedSchedule instanceof MultiRangeScheduleModel) {
+
+                MultiRangeScheduleModel requestedMultiRangeSchedule = (MultiRangeScheduleModel) requestedSchedule;
+                final MultiRangeScheduleEntity multiRangeScheduleEntity = this.multiRangeScheduleDao.findOrCreateMultiRangeSchedule(requestedMultiRangeSchedule);
+                updatedPartyEntity = this.partyDao.findEntity(multiRangeScheduleEntity.getDateScheduleId());
+            } else {
+                String errMsg = String.format("Requested Schedule of type : %s not supported !!!",
+                                                                requestedSchedule.getClass().getName());
+                throw new AlertlessIllegalArgumentException(errMsg);
+            }
 
         } else if (ScheduleType.BY_DATE.equals(scheduleType)) {
-            // TODO: Provide implementation
-            throw new AlertlessRuntimeException("MultiRangeSchedule findOrUpdateMultiRangeSchedule() not implemented !!!");
+
+            if (requestedSchedule instanceof MultiRangeScheduleModel) {
+                MultiRangeScheduleModel requestedMultiRangeSchedule = (MultiRangeScheduleModel) requestedSchedule;
+                updatedPartyEntity = this.multiRangeScheduleDao.findOrUpdateMultiRangeSchedule(partyId, requestedMultiRangeSchedule, partyReferredByOther);
+
+            } else if (requestedSchedule instanceof WeekScheduleModel) {
+                WeekScheduleModel requestedWeekDaySchedule = (WeekScheduleModel) requestedSchedule;
+                WeekScheduleEntity weekScheduleEntity = this.weekScheduleDao.findOrCreateWeekSchedule(requestedWeekDaySchedule);
+                updatedPartyEntity = this.partyDao.findEntity(weekScheduleEntity.getWeekScheduleId());
+
+            } else {
+                String errMsg = String.format("Requested Schedule of type : %s not supported !!!",
+                        requestedSchedule.getClass().getName());
+                throw new AlertlessIllegalArgumentException(errMsg);
+            }
+
         } else {
             String errMsg = String.format("Schedule type : %s not supported !!!", scheduleType);
             throw new AlertlessIllegalArgumentException(errMsg);

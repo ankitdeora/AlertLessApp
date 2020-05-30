@@ -43,7 +43,7 @@ import static com.example.alertless.utils.Constants.MULTI_RANGE_SCHEDULE_TABLE;
                 @Index(value = {DATE_SCHEDULE_ID}),
                 @Index(value = {DATE_RANGE_FK})
         })
-public class MultiRangeScheduleEntity implements BaseEntity {
+public class MultiRangeScheduleEntity implements BaseEntity, SchedulableEntity {
     @NonNull
     @PrimaryKey
     private String id;
@@ -65,5 +65,10 @@ public class MultiRangeScheduleEntity implements BaseEntity {
                     .dateScheduleId(this.dateScheduleId)
                     .dateRangeId(this.dateRangeId)
                 .build();
+    }
+
+    @Override
+    public String getScheduleId() {
+        return dateScheduleId;
     }
 }

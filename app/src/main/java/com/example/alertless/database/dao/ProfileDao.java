@@ -62,7 +62,7 @@ public abstract class ProfileDao extends BaseDao<ProfileDetailsEntity, ProfileDe
         // delete profile schedule
         this.profileScheduleDao.cascadeDelete(profileId);
 
-        // delete profile apps
+        // TODO: delete profile apps
 
         // delete profile
         this.delete(profileId);

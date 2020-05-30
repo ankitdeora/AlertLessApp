@@ -4,10 +4,11 @@ import androidx.room.Dao;
 import androidx.room.Query;
 import androidx.room.Transaction;
 
+import com.example.alertless.entities.BaseEntity;
+import com.example.alertless.entities.SchedulableEntity;
 import com.example.alertless.enums.ScheduleType;
 import com.example.alertless.database.AppDatabase;
 import com.example.alertless.entities.DateRangeEntity;
-import com.example.alertless.entities.MultiRangeScheduleEntity;
 import com.example.alertless.entities.PartyEntity;
 import com.example.alertless.entities.WeekScheduleEntity;
 import com.example.alertless.models.DateRangeModel;
@@ -17,6 +18,7 @@ import com.example.alertless.utils.ValidationUtils;
 import com.example.alertless.utils.WeekUtils;
 
 import java.util.List;
+import java.util.function.Function;
 
 import ca.antonious.materialdaypicker.MaterialDayPicker;
 
@@ -26,13 +28,13 @@ import static com.example.alertless.utils.StringUtils.*;
 public abstract class WeekScheduleDao extends BaseDao<WeekScheduleEntity, WeekScheduleDTO> {
 
     private final DateRangeDao dateRangeDao;
-    private final MultiRangeScheduleDao multiRangeScheduleDao;
+    private final CommonScheduleDao commonScheduleDao;
     private final PartyDao partyDao;
 
     public WeekScheduleDao(AppDatabase appDatabase) {
         this.dateRangeDao = appDatabase.getDateRangeDao();
         this.partyDao = appDatabase.getPartyDao();
-        this.multiRangeScheduleDao = appDatabase.getMultiRangeScheduleDao();
+        this.commonScheduleDao = appDatabase.getCommonScheduleDao();
     }
 
     @Override
@@ -45,9 +47,6 @@ public abstract class WeekScheduleDao extends BaseDao<WeekScheduleEntity, WeekSc
 
     @Query("SELECT * FROM week_schedule WHERE weekdays = :weekdays AND date_range_id = :dateRangeId")
     public abstract WeekScheduleEntity findWeekSchedule(byte weekdays, String dateRangeId);
-
-    @Query("SELECT * FROM week_schedule WHERE date_range_id = :dateRangeId")
-    public abstract List<WeekScheduleEntity> findWeekSchedulesWithDateRange(String dateRangeId);
 
     @Override
     @Query("DELETE FROM week_schedule WHERE week_schedule_id = :weekScheduleId")
@@ -105,17 +104,24 @@ public abstract class WeekScheduleDao extends BaseDao<WeekScheduleEntity, WeekSc
 
     @Transaction
     public void cascadeDelete(String weekScheduleId) {
+        cascadeDelete(weekScheduleId, true);
+    }
+
+    @Transaction
+    public void cascadeDelete(String weekScheduleId, boolean deleteParty) {
         ValidationUtils.validateInput(weekScheduleId);
 
         WeekScheduleEntity weekScheduleEntity = findEntity(weekScheduleId);
         String dateRangeId = weekScheduleEntity.getDateRangeId();
-        boolean dateReferredByOther = isDateReferredByOther(weekScheduleEntity);
+        boolean dateReferredByOther = this.commonScheduleDao.isDateReferredByOther(weekScheduleEntity, dateRangeId);
 
         // delete week schedule entity
         delete(weekScheduleEntity);
 
         // delete party
-        this.partyDao.delete(weekScheduleId);
+        if (deleteParty) {
+            this.partyDao.delete(weekScheduleId);
+        }
 
         // check and delete date range
         if (!dateReferredByOther) {
@@ -160,7 +166,7 @@ public abstract class WeekScheduleDao extends BaseDao<WeekScheduleEntity, WeekSc
 
         // get updated date range id
         String dateRangeId = existingWeekScheduleEntity.getDateRangeId();
-        boolean dateReferredByOther = isDateReferredByOther(existingWeekScheduleEntity);
+        boolean dateReferredByOther = this.commonScheduleDao.isDateReferredByOther(existingWeekScheduleEntity, dateRangeId);
 
         DateRangeEntity updatedDateRangeEntity = this.dateRangeDao.findOrUpdateEntity(dateRangeId,
                 requestedWeekSchedule.getDateRangeModel(), dateReferredByOther);
@@ -187,21 +193,5 @@ public abstract class WeekScheduleDao extends BaseDao<WeekScheduleEntity, WeekSc
         }
 
         return this.partyDao.findEntity(newWeekScheduleId);
-    }
-
-    private boolean isDateReferredByOther(WeekScheduleEntity entity) {
-        boolean dateReferredByOther = false;
-        String originalDateRangeId = entity.getDateRangeId();
-
-        List<WeekScheduleEntity> weekSchedulesWithSameDateRange = findWeekSchedulesWithDateRange(originalDateRangeId);
-        List<MultiRangeScheduleEntity> multiRangeSchedulesWithSameDateRange = this.multiRangeScheduleDao
-                .findMultiRangeSchedulesWithDateRange(originalDateRangeId);
-
-        if ((weekSchedulesWithSameDateRange != null && (weekSchedulesWithSameDateRange.size() > 1 || !weekSchedulesWithSameDateRange.get(0).getId().equals(entity.getId()))) ||
-                (multiRangeSchedulesWithSameDateRange != null && !multiRangeSchedulesWithSameDateRange.isEmpty())) {
-            dateReferredByOther = true;
-        }
-
-        return dateReferredByOther;
     }
 }

@@ -43,7 +43,7 @@ import static com.example.alertless.utils.Constants.WEEK_SCHEDULE_TABLE;
                                     onUpdate = ForeignKey.CASCADE)
                     },
         indices = {@Index(value = {DATE_RANGE_FK})})
-public class WeekScheduleEntity implements BaseEntity {
+public class WeekScheduleEntity implements BaseEntity, SchedulableEntity {
     @NonNull
     @PrimaryKey
     @ColumnInfo(name = WEEK_SCHEDULE_ID)
@@ -71,5 +71,10 @@ public class WeekScheduleEntity implements BaseEntity {
                     .weekdays(this.weekdays)
                     .dateRangeId(this.dateRangeId)
                 .build();
+    }
+
+    @Override
+    public String getScheduleId() {
+        return weekScheduleId;
     }
 }

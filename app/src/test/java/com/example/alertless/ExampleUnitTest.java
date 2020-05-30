@@ -1,5 +1,7 @@
 package com.example.alertless;
 
+import androidx.sqlite.db.SimpleSQLiteQuery;
+
 import com.example.alertless.models.DateRangeModel;
 import com.example.alertless.utils.Constants;
 import com.example.alertless.utils.DateRangeUtils;
@@ -192,6 +194,22 @@ public class ExampleUnitTest {
     @Test
     public void testUniqueId() {
         System.out.println(UUID.randomUUID());
+    }
+
+    @Test
+    public void testJoin() {
+        String[] dateRanges = new String[] {"4", "5", "6"};
+
+        String query = "select date_schedule_id " +
+                "from multi_range_schedule " +
+                "where date_schedule_id in " +
+                "(select date_schedule_id " +
+                "from multi_range_schedule where date_range_id in (?) " +
+                "group by date_schedule_id " +
+                "having count(distinct date_range_id) = ?) group by date_schedule_id having count (distinct date_range_id) = ?";
+        String dateRangesWithComma = org.apache.commons.lang3.StringUtils.join(dateRanges, ",");
+        SimpleSQLiteQuery simpleSQLiteQuery = new SimpleSQLiteQuery(query, new Object[]{dateRangesWithComma, 3, 3});
+        System.out.println(simpleSQLiteQuery.getSql());
     }
 
 }

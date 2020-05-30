@@ -3,10 +3,12 @@ package com.example.alertless.database.repositories;
 import android.app.Application;
 import android.util.Log;
 
+import com.example.alertless.database.dao.MultiRangeScheduleDao;
 import com.example.alertless.database.dao.PartyDao;
 import com.example.alertless.database.dao.ProfileScheduleDao;
 import com.example.alertless.database.dao.ScheduleDao;
 import com.example.alertless.database.dao.WeekScheduleDao;
+import com.example.alertless.entities.MultiRangeScheduleEntity;
 import com.example.alertless.entities.PartyEntity;
 import com.example.alertless.entities.ScheduleEntity;
 import com.example.alertless.entities.WeekScheduleEntity;
@@ -33,6 +35,7 @@ public class WeekScheduleRepository extends BaseRepository<WeekScheduleEntity, W
     private final ScheduleDao scheduleDao;
     private final ProfileScheduleDao profileScheduleDao;
     private final WeekScheduleDao weekScheduleDao;
+    private final MultiRangeScheduleDao multiRangeScheduleDao;
     private final ScheduleRepository scheduleRepository;
     private final TimeRangeRepository timeRangeRepository;
     private final DateRangeRepository dateRangeRepository;
@@ -45,6 +48,7 @@ public class WeekScheduleRepository extends BaseRepository<WeekScheduleEntity, W
         this.scheduleDao = appDatabase.getScheduleDao();
         this.profileScheduleDao = appDatabase.getProfileScheduleDao();
         this.weekScheduleDao = (WeekScheduleDao) this.dao;
+        this.multiRangeScheduleDao = appDatabase.getMultiRangeScheduleDao();
         this.partyDao = appDatabase.getPartyDao();
 
         this.scheduleRepository = ScheduleRepository.getInstance(application);
@@ -63,6 +67,11 @@ public class WeekScheduleRepository extends BaseRepository<WeekScheduleEntity, W
         }
 
         return INSTANCE;
+    }
+
+    public Object executeRawQuery(String query) throws AlertlessDatabaseException {
+        String errMsg = String.format("error executing raw query : %s", query);
+        return DBUtils.executeTaskAndGet(this.multiRangeScheduleDao::executeRawQuery, query, errMsg);
     }
 
     public void listAllEntities() throws AlertlessDatabaseException {
@@ -92,6 +101,12 @@ public class WeekScheduleRepository extends BaseRepository<WeekScheduleEntity, W
 
         Log.i("PRINTING-DATE-DATA", String.format("Size : %s | %s",this.dateRangeRepository.getAllEntities().size(),
                                                                         this.dateRangeRepository.getAllEntities().toString()));
+
+        List<MultiRangeScheduleEntity> multiScheduleEntities = DBUtils.executeTaskAndGet(this.multiRangeScheduleDao::findAllEntities,
+                                            "Could not get all multiRangeSchedules !!!");
+
+        Log.i("PRINTING-Multi-SCHEDULE-DATA", String.format("Size : %s | %s",multiScheduleEntities.size(),
+                multiScheduleEntities.toString()));
 
 
     }
