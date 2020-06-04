@@ -13,20 +13,26 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.alertless.R;
 import com.example.alertless.activities.ProfileEditActivity;
 import com.example.alertless.database.repositories.ProfileDetailsRepository;
+import com.example.alertless.entities.ProfileDetailsEntity;
 import com.example.alertless.exceptions.AlertlessException;
 import com.example.alertless.models.Profile;
 import com.example.alertless.models.ProfileDetailsModel;
 import com.example.alertless.utils.Constants;
 import com.example.alertless.utils.ToastUtils;
+import com.example.alertless.view.callbacks.ProfileDiffCallBack;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class ProfileListAdapter extends RecyclerView.Adapter<ProfileListAdapter.ProfileViewHolder> {
     private static final String TAG = ProfileListAdapter.class.getName() + Constants.TAG_SUFFIX;
@@ -50,10 +56,11 @@ public class ProfileListAdapter extends RecyclerView.Adapter<ProfileListAdapter.
         private View.OnClickListener getProfileOnClickListener() {
             return v -> {
                 final CharSequence profileName = ((TextView) v).getText();
-                ProfileDetailsModel profileDetails = mProfileMap.get(profileName);
+                ProfileDetailsEntity profileDetails = mProfileMap.get(profileName);
+                ProfileDetailsModel detailsModel = profileDetails.getModel();
 
                 Profile profile = Profile.builder()
-                                    .details(profileDetails)
+                                    .details(detailsModel)
                                     .build();
 
                 Intent intent = new Intent(mContext, ProfileEditActivity.class);
@@ -68,7 +75,7 @@ public class ProfileListAdapter extends RecyclerView.Adapter<ProfileListAdapter.
             return (buttonView, isChecked) -> {
 
                 final CharSequence profileName = profileItemView.getText();
-                ProfileDetailsModel clickedProfile = mProfileMap.get(profileName);
+                ProfileDetailsEntity clickedProfile = mProfileMap.get(profileName);
 
                 if (clickedProfile.isActive() == isChecked) {
                     return;
@@ -78,6 +85,7 @@ public class ProfileListAdapter extends RecyclerView.Adapter<ProfileListAdapter.
                 String updateAction = isChecked ? ENABLED : DISABLED;
                 // Update in DB
                 try {
+
                     profileDetailsRepository.updateProfileDetails(profileName, isChecked);
                     String updateMsg = String.format("Profile : %s %s", profileName, updateAction);
                     ToastUtils.showToast(mContext, updateMsg);
@@ -92,8 +100,8 @@ public class ProfileListAdapter extends RecyclerView.Adapter<ProfileListAdapter.
 
     private ProfileDetailsRepository profileDetailsRepository;
     private final LayoutInflater mInflater;
-    private List<ProfileDetailsModel> mProfileDetails; // Cached copy of profiles
-    private Map<CharSequence, ProfileDetailsModel> mProfileMap;
+    private List<ProfileDetailsEntity> mProfileDetails; // Cached copy of profiles
+    private Map<CharSequence, ProfileDetailsEntity> mProfileMap;
     private Context mContext;
 
     public ProfileListAdapter(Context context, Application application) {
@@ -113,21 +121,36 @@ public class ProfileListAdapter extends RecyclerView.Adapter<ProfileListAdapter.
     @Override
     public void onBindViewHolder(@NonNull ProfileViewHolder holder, int position) {
         if (mProfileDetails != null) {
-            ProfileDetailsModel current = mProfileDetails.get(position);
+
+            ProfileDetailsEntity current = mProfileDetails.get(position);
             holder.profileItemView.setText(current.getName());
             holder.profileItemSwitch.setChecked(current.isActive());
+
         } else {
             // Covers the case of data not being ready yet.
             holder.profileItemView.setText("No Profiles found");
         }
     }
 
-    public void setProfileDetails(List<ProfileDetailsModel> profileDetails){
-        mProfileDetails = profileDetails;
-        populateProfileMap();
+    public void setProfileDetails(List<ProfileDetailsEntity> newProfileDetails){
 
-        // notify data set updated
-        notifyDataSetChanged();
+        if (this.mProfileDetails == null) {
+            updateDataset(newProfileDetails);
+            notifyDataSetChanged();
+            return;
+        }
+
+        final ProfileDiffCallBack diffCallBack = new ProfileDiffCallBack(this.mProfileDetails, newProfileDetails);
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallBack);
+
+        updateDataset(newProfileDetails);
+        diffResult.dispatchUpdatesTo(this);
+
+    }
+
+    private void updateDataset(List<ProfileDetailsEntity> newProfiles) {
+        this.mProfileDetails = newProfiles;
+        populateProfileMap();
     }
 
     private void populateProfileMap() {
@@ -137,7 +160,7 @@ public class ProfileListAdapter extends RecyclerView.Adapter<ProfileListAdapter.
                 mProfileMap = new HashMap<>();
             }
 
-            for (ProfileDetailsModel profileDetails : mProfileDetails) {
+            for (ProfileDetailsEntity profileDetails : mProfileDetails) {
                 mProfileMap.put(profileDetails.getName(), profileDetails);
             }
         }
@@ -151,6 +174,5 @@ public class ProfileListAdapter extends RecyclerView.Adapter<ProfileListAdapter.
             return 0;
         }
     }
-
 
 }

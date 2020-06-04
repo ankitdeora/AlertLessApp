@@ -3,6 +3,7 @@ package com.example.alertless.database.repositories;
 import android.app.Application;
 import android.util.Log;
 
+import com.example.alertless.database.AppDatabase;
 import com.example.alertless.database.dao.MultiRangeScheduleDao;
 import com.example.alertless.database.dao.PartyDao;
 import com.example.alertless.database.dao.ProfileScheduleDao;
@@ -13,16 +14,15 @@ import com.example.alertless.entities.PartyEntity;
 import com.example.alertless.entities.WeekScheduleEntity;
 import com.example.alertless.entities.relations.ProfileScheduleRelation;
 import com.example.alertless.exceptions.AlertlessDatabaseException;
-import com.example.alertless.models.WeekScheduleDTO;
 import com.example.alertless.utils.DBUtils;
 
 import java.util.List;
 
 
-public class WeekScheduleRepository extends BaseRepository<WeekScheduleEntity, WeekScheduleDTO> {
-    //TODO: Null checks are not in place in this class, NPEs might happen
+public class AdminRepository {
 
-    private static volatile WeekScheduleRepository INSTANCE;
+    private static volatile AdminRepository INSTANCE;
+    protected final AppDatabase appDatabase;
 
     private final PartyDao partyDao;
     private final ScheduleDao scheduleDao;
@@ -34,13 +34,12 @@ public class WeekScheduleRepository extends BaseRepository<WeekScheduleEntity, W
     private final DateRangeRepository dateRangeRepository;
     private final ProfileDetailsRepository profileDetailsRepository;
 
-    private WeekScheduleRepository(Application application) {
-        super(application);
+    private AdminRepository(Application application) {
+        this.appDatabase = AppDatabase.getDatabase(application);
 
-        this.dao = appDatabase.getWeekScheduleDao();
         this.scheduleDao = appDatabase.getScheduleDao();
         this.profileScheduleDao = appDatabase.getProfileScheduleDao();
-        this.weekScheduleDao = (WeekScheduleDao) this.dao;
+        this.weekScheduleDao = appDatabase.getWeekScheduleDao();
         this.multiRangeScheduleDao = appDatabase.getMultiRangeScheduleDao();
         this.partyDao = appDatabase.getPartyDao();
 
@@ -50,11 +49,11 @@ public class WeekScheduleRepository extends BaseRepository<WeekScheduleEntity, W
         this.profileDetailsRepository = ProfileDetailsRepository.getInstance(application);
     }
 
-    public static WeekScheduleRepository getInstance(Application application) {
+    public static AdminRepository getInstance(Application application) {
         if (INSTANCE == null) {
-            synchronized (WeekScheduleRepository.class) {
+            synchronized (AdminRepository.class) {
                 if (INSTANCE == null) {
-                    INSTANCE = new WeekScheduleRepository(application);
+                    INSTANCE = new AdminRepository(application);
                 }
             }
         }
@@ -84,8 +83,11 @@ public class WeekScheduleRepository extends BaseRepository<WeekScheduleEntity, W
         Log.i("PRINTING-PARTY-DATA", String.format("Size : %s | %s",partyEntities.size(),
                 partyEntities.toString()));
 
-        Log.i("PRINTING-WEEK-DATA", String.format("Size : %s | %s",this.getAllEntities().size(),
-                this.getAllEntities().toString()));
+        List<WeekScheduleEntity> weekScheduleEntities = DBUtils.executeTaskAndGet(this.weekScheduleDao::findAllEntities,
+                "Could not get all weekSchedules !!!");
+
+        Log.i("PRINTING-WEEK-DATA", String.format("Size : %s | %s", weekScheduleEntities.size(),
+                weekScheduleEntities.toString()));
 
         Log.i("PRINTING-DATE-DATA", String.format("Size : %s | %s",this.dateRangeRepository.getAllEntities().size(),
                                                                         this.dateRangeRepository.getAllEntities().toString()));

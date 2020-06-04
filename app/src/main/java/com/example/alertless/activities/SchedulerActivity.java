@@ -19,7 +19,7 @@ import com.example.alertless.R;
 import com.example.alertless.enums.DatePickerType;
 import com.example.alertless.enums.ScheduleType;
 import com.example.alertless.database.repositories.ProfileRepository;
-import com.example.alertless.database.repositories.WeekScheduleRepository;
+import com.example.alertless.database.repositories.AdminRepository;
 import com.example.alertless.entities.relations.ProfileScheduleRelation;
 import com.example.alertless.exceptions.AlertlessDatabaseException;
 import com.example.alertless.models.DateRangeModel;
@@ -52,7 +52,7 @@ public class SchedulerActivity extends AppCompatActivity {
     private static final String TAG = SchedulerActivity.class.getName() + Constants.TAG_SUFFIX;
 
     // Repository
-    private WeekScheduleRepository weekScheduleRepository = WeekScheduleRepository.getInstance(getApplication());
+    private AdminRepository adminRepository = AdminRepository.getInstance(getApplication());
     private ProfileRepository profileRepository = ProfileRepository.getInstance(getApplication());
 
     // State Variables to store states (user preferences)
@@ -233,7 +233,7 @@ public class SchedulerActivity extends AppCompatActivity {
 
     public void showTimeRange(View v) throws AlertlessDatabaseException {
 
-        this.weekScheduleRepository.listAllEntities();
+        this.adminRepository.listAllEntities();
         ToastUtils.showToast(getApplicationContext(), "Check data in logs");
     }
 

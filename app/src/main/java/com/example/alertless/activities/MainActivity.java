@@ -2,9 +2,7 @@ package com.example.alertless.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
@@ -13,14 +11,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.alertless.R;
-import com.example.alertless.database.repositories.WeekScheduleRepository;
 import com.example.alertless.entities.ProfileDetailsEntity;
-import com.example.alertless.exceptions.AlertlessDatabaseException;
 import com.example.alertless.models.ProfileDetailsModel;
 import com.example.alertless.utils.Constants;
 import com.example.alertless.view.adapters.ProfileListAdapter;
 import com.example.alertless.view.models.ProfileViewModel;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,15 +36,14 @@ public class MainActivity extends AppCompatActivity {
 
         // Init Profile view model
         profileViewModel = ViewModelProviders.of(this).get(ProfileViewModel.class);
-        profileViewModel.getAllProfileDetailsEntities().observe(this, new Observer<List<ProfileDetailsEntity>>() {
-            @Override
-            public void onChanged(List<ProfileDetailsEntity> profileDetailsEntities) {
-                List<ProfileDetailsModel> profileDetailsModels = profileDetailsEntities.stream()
-                        .map(ProfileDetailsEntity::getModel)
-                        .collect(Collectors.toList());
+        profileViewModel.getAllProfileDetailsEntities().observe(this, profileDetailsEntities -> {
 
-                profileListAdapter.setProfileDetails(profileDetailsModels);
-            }
+            Collections.sort(profileDetailsEntities, Comparator.comparing(ProfileDetailsEntity::isActive)
+                                                                .reversed()
+                                                                .thenComparing(ProfileDetailsEntity::getName)
+            );
+
+            profileListAdapter.setProfileDetails(profileDetailsEntities);
         });
     }
 
