@@ -5,22 +5,18 @@ import android.os.Bundle;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.alertless.R;
 import com.example.alertless.entities.ProfileDetailsEntity;
-import com.example.alertless.models.ProfileDetailsModel;
 import com.example.alertless.utils.Constants;
 import com.example.alertless.view.adapters.ProfileListAdapter;
 import com.example.alertless.view.models.ProfileViewModel;
 
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,11 +34,7 @@ public class MainActivity extends AppCompatActivity {
         profileViewModel = ViewModelProviders.of(this).get(ProfileViewModel.class);
         profileViewModel.getAllProfileDetailsEntities().observe(this, profileDetailsEntities -> {
 
-            Collections.sort(profileDetailsEntities, Comparator.comparing(ProfileDetailsEntity::isActive)
-                                                                .reversed()
-                                                                .thenComparing(ProfileDetailsEntity::getName)
-            );
-
+            Collections.sort(profileDetailsEntities, Comparator.comparing(ProfileDetailsEntity::getName));
             profileListAdapter.setProfileDetails(profileDetailsEntities);
         });
     }
@@ -57,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
         return adapter;
     }
 
-    public void editProfile(View view) throws Exception {
+    public void editProfile(View view) {
         Intent intent = new Intent(this, ProfileEditActivity.class);
         startActivity(intent);
     }

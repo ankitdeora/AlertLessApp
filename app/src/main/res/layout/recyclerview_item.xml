@@ -5,19 +5,19 @@
     android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/profileTextView"
+        android:id="@+id/recycler_item_text_view"
         style="@style/word_title"
         android:layout_width="320dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="10dp"
-        android:foreground="?android:attr/selectableItemBackground"
-        android:text="hello"
         android:background="@android:color/holo_orange_light"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:hint="Item"
         android:padding="@dimen/big_padding" />
 
     <Switch
-        android:id="@+id/profileSwitch"
+        android:id="@+id/recycler_item_switch"
         android:layout_width="60dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="7dp"

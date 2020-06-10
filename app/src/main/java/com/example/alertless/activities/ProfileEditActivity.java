@@ -62,7 +62,7 @@ public class ProfileEditActivity extends AppCompatActivity {
     }
 
     private void updateProfileTextView() {
-        TextView profileTextView = findViewById(R.id.profileTextView);
+        TextView profileTextView = findViewById(R.id.recycler_item_text_view);
         profileTextView.setText("Profile : " + currentProfile.getDetails().getName());
     }
 

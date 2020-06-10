@@ -25,19 +25,17 @@ import com.example.alertless.models.Profile;
 import com.example.alertless.models.ProfileDetailsModel;
 import com.example.alertless.utils.Constants;
 import com.example.alertless.utils.ToastUtils;
-import com.example.alertless.view.callbacks.ProfileDiffCallBack;
+import com.example.alertless.view.callbacks.EntityDiffCallBack;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+
+import static com.example.alertless.utils.Constants.DISABLED;
+import static com.example.alertless.utils.Constants.ENABLED;
 
 public class ProfileListAdapter extends RecyclerView.Adapter<ProfileListAdapter.ProfileViewHolder> {
     private static final String TAG = ProfileListAdapter.class.getName() + Constants.TAG_SUFFIX;
-    private static final String ENABLED = "Enabled";
-    private static final String DISABLED = "Disabled";
 
     class ProfileViewHolder extends RecyclerView.ViewHolder {
         private final TextView profileItemView;
@@ -45,8 +43,8 @@ public class ProfileListAdapter extends RecyclerView.Adapter<ProfileListAdapter.
 
         private ProfileViewHolder(View itemView) {
             super(itemView);
-            profileItemView = itemView.findViewById(R.id.profileTextView);
-            profileItemSwitch = itemView.findViewById(R.id.profileSwitch);
+            profileItemView = itemView.findViewById(R.id.recycler_item_text_view);
+            profileItemSwitch = itemView.findViewById(R.id.recycler_item_switch);
 
             profileItemView.setClickable(true);
             profileItemView.setOnClickListener(getProfileOnClickListener());
@@ -98,23 +96,22 @@ public class ProfileListAdapter extends RecyclerView.Adapter<ProfileListAdapter.
         }
     }
 
-    private ProfileDetailsRepository profileDetailsRepository;
+    private final Context mContext;
     private final LayoutInflater mInflater;
+    private final ProfileDetailsRepository profileDetailsRepository;
     private List<ProfileDetailsEntity> mProfileDetails; // Cached copy of profiles
     private Map<CharSequence, ProfileDetailsEntity> mProfileMap;
-    private Context mContext;
 
     public ProfileListAdapter(Context context, Application application) {
         this.mContext = context;
         mInflater = LayoutInflater.from(context);
-        // Init userRepository
         profileDetailsRepository = ProfileDetailsRepository.getInstance(application);
     }
 
     @NonNull
     @Override
     public ProfileViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = mInflater.inflate(R.layout.profile_recyclerview_item, parent, false);
+        View itemView = mInflater.inflate(R.layout.recyclerview_item, parent, false);
         return new ProfileViewHolder(itemView);
     }
 
@@ -140,7 +137,8 @@ public class ProfileListAdapter extends RecyclerView.Adapter<ProfileListAdapter.
             return;
         }
 
-        final ProfileDiffCallBack diffCallBack = new ProfileDiffCallBack(this.mProfileDetails, newProfileDetails);
+        final EntityDiffCallBack<ProfileDetailsEntity> diffCallBack =
+                new EntityDiffCallBack<>(this.mProfileDetails, newProfileDetails);
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallBack);
 
         updateDataset(newProfileDetails);

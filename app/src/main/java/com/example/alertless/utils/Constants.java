@@ -8,6 +8,9 @@ public class Constants {
 
     public static final int UNIQUE_ID_LENGTH = 15;
 
+    public static final String ENABLED = "Enabled";
+    public static final String DISABLED = "Disabled";
+
     // Time tags
     public static final String START_TIME_TAG = "START_TIME_TAG";
     public static final String END_TIME_TAG = "END_TIME_TAG";
