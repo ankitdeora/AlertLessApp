@@ -4,14 +4,18 @@ import android.app.Application;
 import android.util.Log;
 
 import com.example.alertless.database.AppDatabase;
+import com.example.alertless.database.dao.AppDetailsDao;
 import com.example.alertless.database.dao.MultiRangeScheduleDao;
 import com.example.alertless.database.dao.PartyDao;
+import com.example.alertless.database.dao.ProfileAppsDao;
 import com.example.alertless.database.dao.ProfileScheduleDao;
 import com.example.alertless.database.dao.ScheduleDao;
 import com.example.alertless.database.dao.WeekScheduleDao;
+import com.example.alertless.entities.AppDetailsEntity;
 import com.example.alertless.entities.MultiRangeScheduleEntity;
 import com.example.alertless.entities.PartyEntity;
 import com.example.alertless.entities.WeekScheduleEntity;
+import com.example.alertless.entities.relations.ProfileAppRelation;
 import com.example.alertless.entities.relations.ProfileScheduleRelation;
 import com.example.alertless.exceptions.AlertlessDatabaseException;
 import com.example.alertless.utils.DBUtils;
@@ -25,28 +29,30 @@ public class AdminRepository {
     protected final AppDatabase appDatabase;
 
     private final PartyDao partyDao;
-    private final ScheduleDao scheduleDao;
     private final ProfileScheduleDao profileScheduleDao;
+    private final ProfileAppsDao profileAppsDao;
+    private final AppDetailsDao appDetailsDao;
     private final WeekScheduleDao weekScheduleDao;
     private final MultiRangeScheduleDao multiRangeScheduleDao;
     private final ScheduleRepository scheduleRepository;
     private final TimeRangeRepository timeRangeRepository;
     private final DateRangeRepository dateRangeRepository;
-    private final ProfileDetailsRepository profileDetailsRepository;
+    private final ProfileRepository profileRepository;
 
     private AdminRepository(Application application) {
         this.appDatabase = AppDatabase.getDatabase(application);
 
-        this.scheduleDao = appDatabase.getScheduleDao();
         this.profileScheduleDao = appDatabase.getProfileScheduleDao();
         this.weekScheduleDao = appDatabase.getWeekScheduleDao();
         this.multiRangeScheduleDao = appDatabase.getMultiRangeScheduleDao();
         this.partyDao = appDatabase.getPartyDao();
+        this.appDetailsDao = appDatabase.getAppDetailsDao();
+        this.profileAppsDao = appDatabase.getProfileAppsDao();
 
         this.scheduleRepository = ScheduleRepository.getInstance(application);
         this.timeRangeRepository = TimeRangeRepository.getInstance(application);
         this.dateRangeRepository = DateRangeRepository.getInstance(application);
-        this.profileDetailsRepository = ProfileDetailsRepository.getInstance(application);
+        this.profileRepository = ProfileRepository.getInstance(application);
     }
 
     public static AdminRepository getInstance(Application application) {
@@ -64,8 +70,8 @@ public class AdminRepository {
     public void listAllEntities() throws AlertlessDatabaseException {
         Log.i("PRINTING-ALL-DATA", "*************** PRINTING-ALL-DATA ***************");
 
-        Log.i("PRINTING-PROFILE-DATA", String.format("Size : %s | %s",this.profileDetailsRepository.getAllEntities().size(),
-                this.profileDetailsRepository.getAllEntities().toString()));
+        Log.i("PRINTING-PROFILE-DATA", String.format("Size : %s | %s",this.profileRepository.getAllEntities().size(),
+                this.profileRepository.getAllEntities().toString()));
 
         List<ProfileScheduleRelation> profileScheduleRelations = DBUtils.executeTaskAndGet(this.profileScheduleDao::findAllEntities, "Could not get all profileSchedules !!!");
 
@@ -98,7 +104,11 @@ public class AdminRepository {
         Log.i("PRINTING-Multi-SCHEDULE-DATA", String.format("Size : %s | %s",multiScheduleEntities.size(),
                 multiScheduleEntities.toString()));
 
+        List<AppDetailsEntity> appDetailsEntities = DBUtils.executeTaskAndGet(this.appDetailsDao::findAllEntities, "could not get apps !!!");
+        Log.i("PRINTING-Apps-DATA", String.format("Size : %s | %s", appDetailsEntities.size(), appDetailsEntities.toString()));
 
+        List<ProfileAppRelation> profileAppRelations = DBUtils.executeTaskAndGet(this.profileAppsDao::findAllEntities, "could not get profileApps !!!");
+        Log.i("PRINTING-ProfileApps-DATA", String.format("Size : %s | %s", profileAppRelations.size(), profileAppRelations.toString()));
     }
 
 }

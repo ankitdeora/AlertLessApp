@@ -3,6 +3,8 @@ package com.example.alertless.models;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -20,6 +22,6 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class Profile implements Serializable {
     private ProfileDetailsModel details;
-    private ArrayList<AppDetailsModel> apps;
+    private List<AppDetailsModel> apps;
     private ScheduleModel schedule;
 }

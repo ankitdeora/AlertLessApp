@@ -11,6 +11,7 @@ import com.example.alertless.database.dao.CommonScheduleDao;
 import com.example.alertless.database.dao.DateRangeDao;
 import com.example.alertless.database.dao.MultiRangeScheduleDao;
 import com.example.alertless.database.dao.PartyDao;
+import com.example.alertless.database.dao.ProfileAppsDao;
 import com.example.alertless.database.dao.ProfileDao;
 import com.example.alertless.database.dao.ProfileScheduleDao;
 import com.example.alertless.database.dao.ScheduleDao;
@@ -71,6 +72,7 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract ProfileScheduleDao getProfileScheduleDao();
     public abstract TimeRangeDao getTimeRangeDao();
     public abstract AppDetailsDao getAppDetailsDao();
+    public abstract ProfileAppsDao getProfileAppsDao();
     public abstract DateRangeDao getDateRangeDao();
     public abstract ScheduleDao getScheduleDao();
     public abstract WeekScheduleDao getWeekScheduleDao();

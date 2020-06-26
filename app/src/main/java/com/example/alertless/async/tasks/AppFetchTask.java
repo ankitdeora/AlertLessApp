@@ -10,6 +10,7 @@ import com.example.alertless.utils.AppUtils;
 import com.example.alertless.view.adapters.AppListAdapter;
 
 import java.util.List;
+import java.util.Set;
 
 public class AppFetchTask extends AsyncTask<Void, Void, List<AppDetailsModel>> {
 
@@ -17,12 +18,14 @@ public class AppFetchTask extends AsyncTask<Void, Void, List<AppDetailsModel>> {
     private View view;
     private ProgressBar spinner;
     private AppListAdapter appListAdapter;
+    private Set<AppDetailsModel> enabledApps;
 
-    public AppFetchTask(Context mContext, View view, ProgressBar spinner, AppListAdapter appListAdapter) {
+    public AppFetchTask(Context mContext, View view, ProgressBar spinner, AppListAdapter appListAdapter, Set<AppDetailsModel> enabledApps) {
         this.mContext = mContext;
         this.view = view;
         this.spinner = spinner;
         this.appListAdapter = appListAdapter;
+        this.enabledApps = enabledApps;
     }
 
     @Override
@@ -41,7 +44,7 @@ public class AppFetchTask extends AsyncTask<Void, Void, List<AppDetailsModel>> {
     protected void onPostExecute(List<AppDetailsModel> userApps) {
         spinner.setVisibility(View.GONE);
         view.setVisibility(View.VISIBLE);
-        appListAdapter.setApps(userApps);
+        appListAdapter.setApps(userApps, this.enabledApps);
         super.onPostExecute(userApps);
     }
 }

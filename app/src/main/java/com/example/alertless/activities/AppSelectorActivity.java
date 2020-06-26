@@ -1,10 +1,11 @@
 package com.example.alertless.activities;
 
-import android.content.pm.PackageManager;
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
@@ -14,37 +15,64 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.alertless.R;
 import com.example.alertless.async.tasks.AppFetchTask;
+import com.example.alertless.database.repositories.ProfileRepository;
+import com.example.alertless.exceptions.AlertlessDatabaseException;
 import com.example.alertless.models.AppDetailsModel;
+import com.example.alertless.models.Profile;
+import com.example.alertless.utils.ActivityUtils;
 import com.example.alertless.utils.Constants;
 import com.example.alertless.utils.ToastUtils;
 import com.example.alertless.view.adapters.AppListAdapter;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class AppSelectorActivity extends AppCompatActivity {
 
     private static final String TAG = AppSelectorActivity.class.getName() + Constants.TAG_SUFFIX;
+    private ProfileRepository profileRepository = ProfileRepository.getInstance(getApplication());
 
-    private PackageManager packageManager;
     private AppListAdapter appListAdapter;
     private ProgressBar progressBar;
     private RecyclerView recyclerView;
+    private Profile currentProfile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_selector);
 
-        initStates();
-        new AppFetchTask(this, recyclerView, progressBar, appListAdapter).execute();
+        try {
+            initStates();
+            Set<AppDetailsModel> enabledAppsSet = this.currentProfile.getApps() != null ?
+                                                        new HashSet<>(this.currentProfile.getApps()) :
+                                                        null;
+
+            new AppFetchTask(this, recyclerView, progressBar, appListAdapter, enabledAppsSet).execute();
+
+        } catch (AlertlessDatabaseException e) {
+            Log.i(TAG, e.getMessage(), e);
+            ActivityUtils.finishActivityWithErr(Constants.APP_SELECTOR_ERROR, e.getMessage(), this);
+        }
     }
 
-    private void initStates() {
+    private void initStates() throws AlertlessDatabaseException {
         progressBar = findViewById(R.id.progressBarCyclic);
         appListAdapter = new AppListAdapter(this, getApplication());
         setRecyclerView();
 
-        packageManager = getPackageManager();
+        this.currentProfile = (Profile) getIntent().getSerializableExtra(Constants.CURRENT_PROFILE);
+
+        if (this.currentProfile == null) {
+            String errMsg = "App Selector Activity cancelled as no Profile configured !!!";
+            ActivityUtils.finishActivityWithErr(Constants.APP_SELECTOR_ERROR, errMsg, this);
+        }
+
+        List<AppDetailsModel> profileEnabledApps = this.profileRepository.getProfileApps(this.currentProfile.getDetails().getName());
+        this.currentProfile.setApps(profileEnabledApps);
+
     }
 
     @Override
@@ -58,6 +86,7 @@ public class AppSelectorActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.save_app_btn) {
+            saveApps();
             return true;
         }
 
@@ -70,7 +99,25 @@ public class AppSelectorActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
-    public void listApps(View view) {
+    private void saveApps() {
+        listApps();
+        Set<AppDetailsModel> enabledApps = this.appListAdapter.getEnabledApps();
+        this.currentProfile.setApps(new ArrayList<>(enabledApps));
+
+        try {
+            profileRepository.createOrUpdateProfileApps(this.currentProfile);
+        } catch (AlertlessDatabaseException e) {
+            Log.i(TAG, e.getMessage(), e);
+            ActivityUtils.finishActivityWithErr(Constants.APP_SELECTOR_ERROR, e.getMessage(), this);
+        }
+
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra(Constants.APP_SELECTOR_RESULT, (ArrayList) this.currentProfile.getApps());
+        setResult(Activity.RESULT_OK, returnIntent);
+        finish();
+    }
+
+    public void listApps() {
 
         Set<AppDetailsModel> enabledApps = appListAdapter.getEnabledApps();
         String msg = "";

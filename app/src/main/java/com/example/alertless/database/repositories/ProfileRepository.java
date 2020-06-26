@@ -2,29 +2,37 @@ package com.example.alertless.database.repositories;
 
 import android.app.Application;
 
-import com.example.alertless.database.AppDatabase;
+import com.example.alertless.database.dao.ProfileAppsDao;
 import com.example.alertless.database.dao.ProfileDao;
 import com.example.alertless.database.dao.ProfileScheduleDao;
 import com.example.alertless.entities.ProfileDetailsEntity;
+import com.example.alertless.entities.relations.ProfileAppRelation;
 import com.example.alertless.entities.relations.ProfileScheduleRelation;
 import com.example.alertless.exceptions.AlertlessDatabaseException;
 import com.example.alertless.exceptions.AlertlessException;
 import com.example.alertless.exceptions.AlertlessRuntimeException;
+import com.example.alertless.models.AppDetailsModel;
 import com.example.alertless.models.Profile;
 import com.example.alertless.models.ScheduleModel;
 import com.example.alertless.utils.DBUtils;
 import com.example.alertless.utils.ValidationUtils;
 
-public class ProfileRepository {
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+public class ProfileRepository extends ProfileDetailsRepository{
     private static volatile ProfileRepository INSTANCE;
-    private final AppDatabase appDatabase;
     private final ProfileDao profileDao;
     private final ProfileScheduleDao profileScheduleDao;
+    private final ProfileAppsDao profileAppsDao;
 
-    protected ProfileRepository(Application application) {
-        this.appDatabase = AppDatabase.getDatabase(application);
-        this.profileDao = this.appDatabase.getProfileDao();
+    private ProfileRepository(Application application) {
+        super(application);
+        this.profileDao = (ProfileDao) this.dao;
         this.profileScheduleDao = this.appDatabase.getProfileScheduleDao();
+        this.profileAppsDao = this.appDatabase.getProfileAppsDao();
     }
 
     public static ProfileRepository getInstance(Application application) {
@@ -63,6 +71,8 @@ public class ProfileRepository {
 
         String errMsg = String.format("Could not delete profile : %s", profileName);
         DBUtils.executeTask(this.profileDao::cascadeDelete, profileId, errMsg);
+
+        this.activeProfileMap.remove(profileName);
     }
 
     private String checkAndGetProfileId(CharSequence profileName) throws AlertlessDatabaseException {
@@ -78,4 +88,24 @@ public class ProfileRepository {
 
         return profileDetailsEntity.getId();
     }
+
+    public List<ProfileAppRelation> createOrUpdateProfileApps(Profile profile) throws AlertlessDatabaseException {
+        ValidationUtils.validateInput(profile);
+        ValidationUtils.validateInput(profile.getDetails());
+        ValidationUtils.validateInput(profile.getApps());
+
+        String profileId = checkAndGetProfileId(profile.getDetails().getName());
+
+        String errMsg = String.format("Could not save apps for profile: %s", profile.getDetails().getName());
+        return DBUtils.executeTaskAndGet(this.profileAppsDao::createOrUpdateProfileApps,
+                profileId, profile.getApps(), errMsg);
+    }
+
+    public List<AppDetailsModel> getProfileApps(String profileName) throws AlertlessDatabaseException {
+        String profileId = checkAndGetProfileId(profileName);
+
+        String errMsg = String.format("Could not get Apps for profile: %s", profileName);
+        return DBUtils.executeTaskAndGet(this.profileAppsDao::getProfileSilentApps, profileId, errMsg);
+    }
+
 }

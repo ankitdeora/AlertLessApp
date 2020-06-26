@@ -6,41 +6,31 @@
     android:layout_height="match_parent"
     tools:context=".activities.AppSelectorActivity">
 
-    <ProgressBar
-        android:id="@+id/progressBarCyclic"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="160dp"
-        android:layout_marginTop="60dp"
-        android:minWidth="50dp"
-        android:minHeight="50dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/appRecyclerview"
         android:layout_width="match_parent"
-        android:layout_height="374dp"
-        android:layout_marginTop="64dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="0dp"
         android:padding="@dimen/big_padding"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/progressBarCyclic"
+        app:layout_constraintTop_toTopOf="parent"
         tools:listitem="@layout/recyclerview_item" />
 
-    <Button
-        android:id="@+id/list_apps_btn"
-        android:layout_width="143dp"
-        android:layout_height="42dp"
-        android:layout_marginTop="64dp"
-        android:onClick="listApps"
-        android:text="List Apps"
-        app:layout_constraintEnd_toEndOf="parent"
+    <ProgressBar
+        android:id="@+id/progressBarCyclic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="164dp"
+        android:layout_marginTop="188dp"
+        android:minWidth="50dp"
+        android:minHeight="50dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appRecyclerview" />
+        app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

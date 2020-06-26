@@ -1,70 +1,120 @@
 package com.example.alertless.services;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
 
+import com.example.alertless.database.repositories.ProfileRepository;
+import com.example.alertless.entities.ProfileDetailsEntity;
+import com.example.alertless.exceptions.AlertlessDatabaseException;
+import com.example.alertless.models.AppDetailsModel;
+import com.example.alertless.models.Profile;
+import com.example.alertless.models.ScheduleModel;
+import com.example.alertless.utils.Constants;
 import com.example.alertless.utils.ToastUtils;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 public class AlertNotifyService extends NotificationListenerService {
+    private static final String TAG = AlertNotifyService.class.getName() + Constants.TAG_SUFFIX;
+
     Context context;
+    ProfileRepository profileRepository;
 
     @Override
     public void onCreate() {
         super.onCreate();
         context = getApplicationContext();
+
+        profileRepository = ProfileRepository.getInstance(getApplication());
+        profileRepository.getActiveProfiles().observeForever(activeProfiles -> {
+
+            Optional.ofNullable(activeProfiles).ifPresent(activeProfilesList -> {
+                String toastMsg = "Active Profiles : " + activeProfiles.size();
+                Log.i(TAG, toastMsg);
+                ToastUtils.showToast(getApplicationContext(), toastMsg);
+            });
+
+        });
     }
 
-    /*
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
+        String packageName = sbn.getPackageName();
 
-        String pack = sbn.getPackageName();
-        int id = sbn.getId();
-        String key = sbn.getKey();
+        Map<String, Set<Profile>> packageProfilesMap = profileRepository.getPackageProfilesMap();
+        Set<Profile> profiles = null;
+        List<ScheduleModel> schedules;
 
-        CharSequence text = "default";
-        String title = "default";
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-            Bundle extras = extras = sbn.getNotification().extras;
-            text = extras.getCharSequence("android.text");
-            title = extras.getString("android.title");
+        if (packageProfilesMap != null) {
+            profiles = packageProfilesMap.get(packageName);
         }
 
-        String msg = String.format("Pack: %s Text : %s Title : %s id : %s key: %s", pack, text, title, id, key);
-        ToastUtils.showToast(getApplicationContext(), msg);
-        Log.i("Notify Service", "##### New POST ########" + msg);
+        if (profiles != null) {
 
-        String hangoutPack = "com.google.android.talk";
-        if (hangoutPack.equalsIgnoreCase(pack)) {
-//            this.cancelNotification(key);
-//            ToastUtils.showToast(getApplicationContext(), "Caneclling Hangout Notification");
+            schedules = profiles.stream()
+                    .map(Profile::getSchedule)
+                    .collect(Collectors.toList());
         } else {
-//            ToastUtils.showToast(getApplicationContext(), "not cancelling anything");
+            List<ProfileDetailsEntity> activeProfiles = profileRepository.getActiveProfiles().getValue();
+
+            if (activeProfiles == null) {
+                return;
+            }
+
+            schedules = activeProfiles.stream()
+                    .map(profileDetails -> {
+                        try {
+                            String profileName = profileDetails.getName();
+                            List<AppDetailsModel> profileApps = profileRepository.getProfileApps(profileName);
+
+                            for (AppDetailsModel app : profileApps) {
+                                if (packageName.equalsIgnoreCase(app.getPackageName())) {
+                                    return profileRepository.getSchedule(profileName);
+                                }
+                            }
+
+                            return null;
+                        } catch (AlertlessDatabaseException e) {
+                            Log.i(TAG, e.getMessage());
+                            return null;
+                        }
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+
         }
-    }
 
-    @Override
-    public void onNotificationRemoved(StatusBarNotification sbn) {
+        checkScheduleAndCancelNotification(schedules, sbn);
 
-        String pack = sbn.getPackageName();
+        /*
         int id = sbn.getId();
         String key = sbn.getKey();
 
-        CharSequence text = "default";
-        String title = "default";
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-            Bundle extras = extras = sbn.getNotification().extras;
-            text = extras.getCharSequence("android.text");
-            title = extras.getString("android.title");
-        }
+        Bundle extras = sbn.getNotification().extras;
+        text = extras.getCharSequence("android.text");
+        title = extras.getString("android.title");
 
-        String msg = String.format("Removed Pack: %s Text : %s Title : %s id : %s key : %s", pack, text, title, id, key);
-        ToastUtils.showToast(getApplicationContext(), msg);
-
-        Log.i("Notify Service", "##### New REMOVE #########" + msg);
+         */
     }
-    */
+
+    private void checkScheduleAndCancelNotification(Collection<ScheduleModel> schedules, StatusBarNotification sbn) {
+        for (ScheduleModel schedule : schedules) {
+
+            if (schedule.isActive()) {
+                String key = sbn.getKey();
+                this.cancelNotification(key);
+                ToastUtils.showToast(context, "Cancelled notification for app : " + sbn.getPackageName());
+                return;
+            }
+        }
+    }
+
 }

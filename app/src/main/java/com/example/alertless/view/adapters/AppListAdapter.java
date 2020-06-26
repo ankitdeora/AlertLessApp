@@ -47,7 +47,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.AppViewH
 
                 AppDetailsModel clickedModel = modelMap.get(packageName);
 
-                if (isChecked) {
+                if (isChecked && clickedModel != null) {
                     enabledApps.add(clickedModel);
                 } else {
                     enabledApps.remove(clickedModel);
@@ -70,10 +70,6 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.AppViewH
 
     public Set<AppDetailsModel> getEnabledApps() {
         return enabledApps;
-    }
-
-    public void setEnabledApps(Set<AppDetailsModel> enabledApps) {
-        this.enabledApps = enabledApps;
     }
 
     @NonNull
@@ -100,9 +96,18 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.AppViewH
         }
     }
 
-    public void setApps(List<AppDetailsModel> newApps){
+    public void setApps(List<AppDetailsModel> newApps, Set<AppDetailsModel> enabledApps){
             updateDataset(newApps);
+
+            if (enabledApps != null) {
+                this.enabledApps = enabledApps;
+            }
+
             notifyDataSetChanged();
+    }
+
+    public void setApps(List<AppDetailsModel> newApps) {
+        setApps(newApps, null);
     }
 
     private void updateDataset(List<AppDetailsModel> newApps) {
@@ -130,6 +135,11 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.AppViewH
         } else {
             return 0;
         }
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
     }
 
 }

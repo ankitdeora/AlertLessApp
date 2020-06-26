@@ -14,10 +14,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.alertless.R;
 import com.example.alertless.enums.ButtonState;
-import com.example.alertless.database.repositories.ProfileDetailsRepository;
 import com.example.alertless.database.repositories.ProfileRepository;
 import com.example.alertless.exceptions.AlertlessDatabaseException;
 import com.example.alertless.exceptions.AlertlessException;
+import com.example.alertless.models.AppDetailsModel;
 import com.example.alertless.models.Profile;
 import com.example.alertless.models.ProfileDetailsModel;
 import com.example.alertless.models.ScheduleModel;
@@ -26,16 +26,26 @@ import com.example.alertless.utils.StringUtils;
 import com.example.alertless.utils.ToastUtils;
 
 
+import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 public class ProfileEditActivity extends AppCompatActivity {
     private static final String TAG = ProfileEditActivity.class.getName() + Constants.TAG_SUFFIX;
     public static final boolean DEFAULT_PROFILE_SWITCH_STATE = true;
     public static final int LAUNCH_SCHEDULER_ACTIVITY = 1;
+    public static final int LAUNCH_APP_SELECTOR_ACTIVITY = 2;
+
+    public static final String SCHEDULER_SUCCESS_TOAST = "Scheduler Result : %s";
+    public static final String SCHEDULER_CANCELLED_TOAST = "Scheduler Activity Cancelled due to error : %s";
+
+    public static final String APP_SELECTOR_SUCCESS_TOAST = "AppSelector Result: %s";
+    public static final String APP_SELECTOR_CANCELLED_TOAST = "App Selector Activity Cancelled due to error : %s";
+    public static final String NULL_DATA_ERROR = "null Data";
+
 
     private Profile currentProfile;
     private ProfileRepository profileRepository = ProfileRepository.getInstance(getApplication());
-    private ProfileDetailsRepository profileDetailsRepository = ProfileDetailsRepository.getInstance(getApplication());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,25 +81,27 @@ public class ProfileEditActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == LAUNCH_SCHEDULER_ACTIVITY) {
-            if(resultCode == Activity.RESULT_OK){
+            Supplier<ScheduleModel> scheduleSupplier = () -> (ScheduleModel) data.getSerializableExtra(Constants.SCHEDULE_RESULT);
+            handleActivityResult(resultCode, data, scheduleSupplier, SCHEDULER_SUCCESS_TOAST, Constants.SCHEDULE_ERROR, SCHEDULER_CANCELLED_TOAST);
 
-                ScheduleModel schedule = (ScheduleModel) data.getSerializableExtra(Constants.SCHEDULE_RESULT);
+        } else if (requestCode == LAUNCH_APP_SELECTOR_ACTIVITY) {
 
-                String toastMsg = "Returned OK, from scheduler : %s";
+            Supplier<List<AppDetailsModel>> appsSupplier = () -> (List) data.getSerializableExtra(Constants.APP_SELECTOR_RESULT);
+            handleActivityResult(resultCode, data, appsSupplier, APP_SELECTOR_SUCCESS_TOAST, Constants.APP_SELECTOR_ERROR, APP_SELECTOR_CANCELLED_TOAST);
+        }
+    }
 
-                toastMsg = String.format(toastMsg, schedule.toString());
-                ToastUtils.showToast(getApplicationContext(), toastMsg, Toast.LENGTH_LONG);
+    private <T> void handleActivityResult(int resultCode, Intent data, Supplier<T> dataSupplier, String successToastKey,
+                                                                                   String errorDataKey, String errorToastKey) {
+        if (resultCode == Activity.RESULT_OK) {
 
-            } else if (resultCode == Activity.RESULT_CANCELED) {
-                String errResult = "null Data";
+            T result = dataSupplier.get();
+            ToastUtils.showToast(getApplicationContext(), String.format(successToastKey, result), Toast.LENGTH_LONG);
 
-                if (data != null) {
-                    errResult = data.getStringExtra(Constants.SCHEDULE_ERROR);
-                }
+        } else if (resultCode == Activity.RESULT_CANCELED) {
 
-                String errMsg = String.format("Scheduler Activity Cancelled due to error : %s", errResult);
-                ToastUtils.showToast(getApplicationContext(), errMsg);
-            }
+            String errResult = data != null ? data.getStringExtra(errorDataKey) : NULL_DATA_ERROR;
+            ToastUtils.showToast(getApplicationContext(), String.format(errorToastKey, errResult));
         }
     }
 
@@ -100,9 +112,9 @@ public class ProfileEditActivity extends AppCompatActivity {
     }
 
     public void silentMoreApps(View view) {
-
         Intent intent = new Intent(this, AppSelectorActivity.class);
-        startActivity(intent);
+        intent.putExtra(Constants.CURRENT_PROFILE, currentProfile);
+        startActivityForResult(intent, LAUNCH_APP_SELECTOR_ACTIVITY);
     }
 
     public void saveProfileName(View view) {
@@ -120,7 +132,7 @@ public class ProfileEditActivity extends AppCompatActivity {
             if (currentProfile.getDetails() == null) {
                 ProfileDetailsModel profileDetails = new ProfileDetailsModel(profileName, DEFAULT_PROFILE_SWITCH_STATE);
 
-                profileDetailsRepository.createEntity(profileDetails);
+                profileRepository.createProfile(profileDetails);
 
                 // Update state
                 currentProfile.setDetails(profileDetails);
@@ -130,7 +142,7 @@ public class ProfileEditActivity extends AppCompatActivity {
 
                 ToastUtils.showToast(getApplicationContext(),"Saved Profile : " + profileDetails.toString());
             } else {
-                profileDetailsRepository.updateProfileDetails(currentProfile.getDetails().getName(), profileName);
+                profileRepository.updateProfileDetails(currentProfile.getDetails().getName(), profileName);
 
                 // Update state
                 currentProfile.getDetails().setName(profileName);
@@ -190,7 +202,7 @@ public class ProfileEditActivity extends AppCompatActivity {
 
         ProfileDetailsModel profileDetails = null;
         try {
-            profileDetails = profileDetailsRepository.getProfileDetailsByName(profileName);
+            profileDetails = profileRepository.getProfileDetailsByName(profileName);
 
             Optional.ofNullable(profileDetails).orElseThrow(() -> {
                 String notFoundMsg = String.format("Profile : %s does not exist !!!", profileName);

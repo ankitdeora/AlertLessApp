@@ -1,8 +1,11 @@
 package com.example.alertless.models;
 
 import com.example.alertless.enums.ScheduleType;
+import com.example.alertless.utils.TimeUtils;
 
 import java.io.Serializable;
+import java.util.Calendar;
+import java.util.Optional;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -24,6 +27,7 @@ public abstract class ScheduleModel implements Serializable {
     private TimeRangeModel timeRangeModel;
 
     public abstract ScheduleType getType();
+    public abstract boolean isActive();
 
     public boolean isWeekType() {
         return ScheduleType.BY_WEEK.equals(getType());
@@ -32,4 +36,12 @@ public abstract class ScheduleModel implements Serializable {
     public boolean isDateType() {
         return ScheduleType.BY_DATE.equals(getType());
     }
+
+    protected boolean isTimeRangeActive(Calendar currentDate, boolean defaultValue) {
+
+        return Optional.ofNullable(this.getTimeRangeModel())
+                         .map(timeRange -> timeRange.isActive(currentDate))
+                         .orElse(defaultValue);
+    }
+
 }

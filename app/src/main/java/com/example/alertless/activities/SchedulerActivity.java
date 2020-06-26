@@ -30,6 +30,7 @@ import com.example.alertless.models.TimeRangeModel;
 import com.example.alertless.models.WeekScheduleModel;
 import com.example.alertless.scheduler.WeekScheduleDatePicker;
 import com.example.alertless.scheduler.ScheduleTimePicker;
+import com.example.alertless.utils.ActivityUtils;
 import com.example.alertless.utils.Constants;
 import com.example.alertless.utils.DateRangeUtils;
 import com.example.alertless.utils.ToastUtils;
@@ -74,14 +75,15 @@ public class SchedulerActivity extends AppCompatActivity {
         this.currentProfile = (Profile) getIntent().getSerializableExtra(Constants.CURRENT_PROFILE);
 
         if (currentProfile == null) {
-            finishActivityWithErr("Scheduler Activity cancelled as no Profile configured !!!");
+            String errMsg = "Scheduler Activity cancelled as no Profile configured !!!";
+            ActivityUtils.finishActivityWithErr(Constants.SCHEDULE_ERROR, errMsg, this);
         }
 
         String profileName = this.currentProfile.getDetails().getName();
         try {
             this.setCurrentSchedule(this.profileRepository.getSchedule(profileName));
         } catch (AlertlessDatabaseException e) {
-            finishActivityWithErr(e.getMessage());
+            ActivityUtils.finishActivityWithErr(Constants.SCHEDULE_ERROR, e.getMessage(), this);
         }
 
         initScheduleStates();
@@ -163,23 +165,15 @@ public class SchedulerActivity extends AppCompatActivity {
             } else {
                 String errMsg = String.format("Date picker type %s NOT supported, only %s are allowed",
                                                         this.datePickerType.name(), DatePickerType.values());
-                finishActivityWithErr(errMsg);
+
+                ActivityUtils.finishActivityWithErr(Constants.SCHEDULE_ERROR, errMsg, this);
             }
         } else {
             String errMsg = String.format("Schedule type %s NOT supported, only %s are allowed",
                     this.getCurrentSchedule().getType().name(), ScheduleType.values());
-            finishActivityWithErr(errMsg);
+
+            ActivityUtils.finishActivityWithErr(Constants.SCHEDULE_ERROR, errMsg, this);
         }
-    }
-
-    private void finishActivityWithErr(String errMsg) {
-        Intent returnIntent = new Intent();
-        returnIntent.putExtra(Constants.SCHEDULE_ERROR, errMsg);
-        setResult(Activity.RESULT_CANCELED, returnIntent);
-
-        ToastUtils.showToast(getApplicationContext(), errMsg);
-
-        finish();
     }
 
     private void populateWeekDaySchedule() {

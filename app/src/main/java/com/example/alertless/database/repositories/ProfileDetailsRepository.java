@@ -4,35 +4,53 @@ import android.app.Application;
 
 import androidx.lifecycle.LiveData;
 
+import com.example.alertless.database.dao.ProfileDao;
 import com.example.alertless.enums.ProfileState;
 import com.example.alertless.entities.ProfileDetailsEntity;
 import com.example.alertless.exceptions.AlertlessDatabaseException;
 import com.example.alertless.exceptions.AlertlessException;
+import com.example.alertless.models.Profile;
 import com.example.alertless.models.ProfileDetailsModel;
 import com.example.alertless.utils.ValidationUtils;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-public class ProfileDetailsRepository extends BaseRepository<ProfileDetailsEntity, ProfileDetailsModel> {
-    private static volatile ProfileDetailsRepository INSTANCE;
-    private LiveData<List<ProfileDetailsEntity>> allProfileDetailsEntities;
+public abstract class ProfileDetailsRepository extends BaseRepository<ProfileDetailsEntity, ProfileDetailsModel> {
+    protected LiveData<List<ProfileDetailsEntity>> allProfileDetailsEntities;
+    protected LiveData<List<ProfileDetailsEntity>> activeProfiles;
 
-    private ProfileDetailsRepository(Application application) {
+    // Map of App's package name and list of active profiles
+    protected Map<String, Set<Profile>> packageProfilesMap;
+    protected Map<String, Profile> activeProfileMap;
+
+    ProfileDetailsRepository(Application application) {
         super(application);
         this.dao = appDatabase.getProfileDao();
+
         allProfileDetailsEntities = this.dao.findAllLiveEntities();
+        activeProfiles = ((ProfileDao)this.dao).getActiveProfiles();
+
+        this.packageProfilesMap = new HashMap<>();
+        this.activeProfileMap = new HashMap<>();
     }
 
-    public static ProfileDetailsRepository getInstance(Application application) {
-        if (INSTANCE == null) {
-            synchronized (ProfileDetailsRepository.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = new ProfileDetailsRepository(application);
-                }
-            }
-        }
+    public Map<String, Set<Profile>> getPackageProfilesMap() {
+        return packageProfilesMap;
+    }
 
-        return INSTANCE;
+    public Map<String, Profile> getActiveProfilesMap() {
+        return activeProfileMap;
+    }
+
+    public void createProfile(ProfileDetailsModel profileDetails) throws AlertlessException {
+        this.createEntity(profileDetails);
+
+        if (profileDetails.isActive()) {
+            this.activeProfileMap.put(profileDetails.getName(), Profile.builder().details(profileDetails).build());
+        }
     }
 
     public void updateProfileDetails(CharSequence profileName, final CharSequence updatedName) throws AlertlessException {
@@ -76,6 +94,10 @@ public class ProfileDetailsRepository extends BaseRepository<ProfileDetailsEntit
 
     public LiveData<List<ProfileDetailsEntity>> getAllProfileDetailsEntity() {
         return allProfileDetailsEntities;
+    }
+
+    public LiveData<List<ProfileDetailsEntity>> getActiveProfiles() {
+        return activeProfiles;
     }
 
     private ProfileDetailsEntity checkAndGetProfile(CharSequence profileName) throws AlertlessException {

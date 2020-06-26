@@ -2,7 +2,10 @@ package com.example.alertless.models;
 
 import com.example.alertless.enums.ScheduleType;
 
+import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -25,6 +28,27 @@ public class MultiRangeScheduleModel extends ScheduleModel {
     @Override
     public ScheduleType getType() {
         return ScheduleType.BY_DATE;
+    }
+
+    @Override
+    public boolean isActive() {
+        Calendar currentDate = Calendar.getInstance();
+        return isDateRangesActive(currentDate) && isTimeRangeActive(currentDate, true);
+    }
+
+    private boolean isDateRangesActive(Calendar currentDate) {
+
+        if (dateRangeModels == null) {
+            return false;
+        }
+
+        for (DateRangeModel dateRange : dateRangeModels) {
+            if (dateRange != null && dateRange.isActive(currentDate)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public boolean isRangeType() {

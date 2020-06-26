@@ -20,9 +20,11 @@ import java.util.List;
 public abstract class ProfileDao extends BaseDao<ProfileDetailsEntity, ProfileDetailsModel> {
 
     private final ProfileScheduleDao profileScheduleDao;
+    private final ProfileAppsDao profileAppsDao;
 
     public ProfileDao(AppDatabase appDatabase) {
         this.profileScheduleDao = appDatabase.getProfileScheduleDao();
+        this.profileAppsDao = appDatabase.getProfileAppsDao();
     }
 
     @Override
@@ -62,7 +64,8 @@ public abstract class ProfileDao extends BaseDao<ProfileDetailsEntity, ProfileDe
         // delete profile schedule
         this.profileScheduleDao.cascadeDelete(profileId);
 
-        // TODO: delete profile apps
+        // delete profile apps
+        this.profileAppsDao.cascadeDelete(profileId);
 
         // delete profile
         this.delete(profileId);

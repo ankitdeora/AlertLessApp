@@ -6,6 +6,7 @@ import com.example.alertless.exceptions.AlertlessIllegalArgumentException;
 import com.example.alertless.utils.ValidationUtils;
 
 import java.io.Serializable;
+import java.util.Calendar;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -35,5 +36,10 @@ public class DateRangeModel implements BaseModel, Serializable {
                     .startDateMs(this.startDateMs)
                     .endDateMs(this.endDateMs)
                 .build();
+    }
+
+    public boolean isActive(Calendar currentDate) {
+        final long currentTimeMs = currentDate.getTimeInMillis();
+        return currentTimeMs >= startDateMs && currentTimeMs <= endDateMs;
     }
 }

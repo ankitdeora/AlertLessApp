@@ -2,9 +2,12 @@ package com.example.alertless.models;
 
 import com.example.alertless.entities.TimeRangeEntity;
 import com.example.alertless.exceptions.AlertlessIllegalArgumentException;
+import com.example.alertless.utils.TimeUtils;
 import com.example.alertless.utils.ValidationUtils;
 
 import java.io.Serializable;
+import java.util.Calendar;
+import java.util.Optional;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,5 +35,14 @@ public class TimeRangeModel implements BaseModel, Serializable {
                     .startMin(this.startMin)
                     .endMin(this.endMin)
                 .build();
+    }
+
+    public boolean isActive(Calendar currentDate) {
+
+        int hour = currentDate.get(Calendar.HOUR_OF_DAY);
+        int minute = currentDate.get(Calendar.MINUTE);
+        int minutesElapsed = TimeUtils.getMinutes(hour, minute);
+
+        return minutesElapsed >= startMin && minutesElapsed <= endMin;
     }
 }

@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.alertless.R;
 import com.example.alertless.activities.ProfileEditActivity;
-import com.example.alertless.database.repositories.ProfileDetailsRepository;
+import com.example.alertless.database.repositories.ProfileRepository;
 import com.example.alertless.entities.ProfileDetailsEntity;
 import com.example.alertless.exceptions.AlertlessException;
 import com.example.alertless.models.Profile;
@@ -84,7 +84,7 @@ public class ProfileListAdapter extends RecyclerView.Adapter<ProfileListAdapter.
                 // Update in DB
                 try {
 
-                    profileDetailsRepository.updateProfileDetails(profileName, isChecked);
+                    profileRepository.updateProfileDetails(profileName, isChecked);
                     String updateMsg = String.format("Profile : %s %s", profileName, updateAction);
                     ToastUtils.showToast(mContext, updateMsg);
                 } catch (AlertlessException e) {
@@ -98,14 +98,14 @@ public class ProfileListAdapter extends RecyclerView.Adapter<ProfileListAdapter.
 
     private final Context mContext;
     private final LayoutInflater mInflater;
-    private final ProfileDetailsRepository profileDetailsRepository;
+    private final ProfileRepository profileRepository;
     private List<ProfileDetailsEntity> mProfileDetails; // Cached copy of profiles
     private Map<CharSequence, ProfileDetailsEntity> mProfileMap;
 
     public ProfileListAdapter(Context context, Application application) {
         this.mContext = context;
         mInflater = LayoutInflater.from(context);
-        profileDetailsRepository = ProfileDetailsRepository.getInstance(application);
+        profileRepository = ProfileRepository.getInstance(application);
     }
 
     @NonNull

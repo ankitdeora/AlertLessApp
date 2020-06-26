@@ -5,6 +5,8 @@ public class Constants {
     public static final String CURRENT_PROFILE = "CURRENT_PROFILE";
     public static final String SCHEDULE_RESULT = "SCHEDULE_RESULT";
     public static final String SCHEDULE_ERROR = "SCHEDULE_ERROR";
+    public static final String APP_SELECTOR_RESULT = "APP_SELECTOR_RESULT";
+    public static final String APP_SELECTOR_ERROR = "APP_SELECTOR_ERROR";
 
     public static final int UNIQUE_ID_LENGTH = 15;
 

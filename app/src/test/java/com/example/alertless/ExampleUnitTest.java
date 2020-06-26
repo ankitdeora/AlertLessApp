@@ -2,9 +2,13 @@ package com.example.alertless;
 
 import androidx.sqlite.db.SimpleSQLiteQuery;
 
+import com.example.alertless.entities.AppDetailsEntity;
+import com.example.alertless.entities.Identity;
+import com.example.alertless.models.AppDetailsModel;
 import com.example.alertless.models.DateRangeModel;
 import com.example.alertless.utils.Constants;
 import com.example.alertless.utils.DateRangeUtils;
+import com.example.alertless.utils.DiffUtils;
 import com.example.alertless.utils.StringUtils;
 import com.example.alertless.utils.WeekUtils;
 
@@ -13,6 +17,7 @@ import org.junit.Test;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -210,6 +215,26 @@ public class ExampleUnitTest {
         String dateRangesWithComma = org.apache.commons.lang3.StringUtils.join(dateRanges, ",");
         SimpleSQLiteQuery simpleSQLiteQuery = new SimpleSQLiteQuery(query, new Object[]{dateRangesWithComma, 3, 3});
         System.out.println(simpleSQLiteQuery.getSql());
+    }
+
+    @Test
+    public void testDiffUtils() {
+        List<AppDetailsEntity> oldList = new ArrayList<>();
+        oldList.add(AppDetailsEntity.builder().id("1").appName("ankit").packageName("package-ankit").build());
+        oldList.add(AppDetailsEntity.builder().id("2").appName("nitina").packageName("package-nitina").build());
+        oldList.add(AppDetailsEntity.builder().id("3").appName("papa").packageName("package-papa").build());
+
+        List<AppDetailsEntity> newList = new ArrayList<>();
+        newList.add(AppDetailsEntity.builder().id("4").appName("pranav").packageName("package-pranav").build());
+        newList.add(AppDetailsEntity.builder().id("2").appName("jiaji").packageName("package-nitina").build());
+        newList.add(AppDetailsEntity.builder().id("5").appName("sanaya").packageName("package-sanaya").build());
+
+        DiffUtils<AppDetailsEntity> diffUtils = new DiffUtils<>(oldList, newList);
+        diffUtils.findDiff();
+
+        System.out.println(diffUtils.added());
+        System.out.println(diffUtils.updated());
+        System.out.println(diffUtils.removed());
     }
 
 }
