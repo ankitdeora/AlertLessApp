@@ -96,12 +96,14 @@ public class ProfileEditActivity extends AppCompatActivity {
         if (resultCode == Activity.RESULT_OK) {
 
             T result = dataSupplier.get();
-            ToastUtils.showToast(getApplicationContext(), String.format(successToastKey, result), Toast.LENGTH_LONG);
+            String resultMsg = String.format(successToastKey, result);
+            Log.i(TAG, resultMsg);
 
         } else if (resultCode == Activity.RESULT_CANCELED) {
 
             String errResult = data != null ? data.getStringExtra(errorDataKey) : NULL_DATA_ERROR;
-            ToastUtils.showToast(getApplicationContext(), String.format(errorToastKey, errResult));
+            String errMsg = String.format(errorToastKey, errResult);
+            Log.i(TAG, errMsg);
         }
     }
 
@@ -127,7 +129,6 @@ public class ProfileEditActivity extends AppCompatActivity {
         }
 
         // insert to DB
-
         try {
             if (currentProfile.getDetails() == null) {
                 ProfileDetailsModel profileDetails = new ProfileDetailsModel(profileName, DEFAULT_PROFILE_SWITCH_STATE);

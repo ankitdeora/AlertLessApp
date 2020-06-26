@@ -9,9 +9,10 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/profileRecyclerview"
         android:layout_width="match_parent"
-        android:layout_height="374dp"
-        android:layout_marginTop="32dp"
-        android:padding="@dimen/big_padding"
+        android:layout_height="match_parent"
+        android:layout_marginTop="0dp"
+        android:scrollbars="vertical"
+        android:scrollbarStyle="outsideOverlay"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -23,15 +24,13 @@
         android:id="@+id/floatingActionButton3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="60dp"
-        android:layout_marginBottom="32dp"
+        android:layout_marginEnd="52dp"
+        android:layout_marginBottom="56dp"
         android:clickable="true"
         android:focusable="true"
         android:onClick="editProfile"
         android:src="@drawable/ic_add_black_24dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profileRecyclerview"
-        app:layout_constraintVertical_bias="0.873" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     tools:context=".activities.AppSelectorActivity">
 
     <androidx.recyclerview.widget.RecyclerView
@@ -11,14 +11,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="0dp"
-        android:padding="@dimen/big_padding"
+        android:scrollbars="vertical"
+        android:scrollbarStyle="outsideOverlay"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:listitem="@layout/recyclerview_item" />
+        tools:listitem="@layout/apps_recyclerview_item" />
 
     <ProgressBar
         android:id="@+id/progressBarCyclic"

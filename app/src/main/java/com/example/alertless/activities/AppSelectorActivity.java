@@ -10,6 +10,7 @@ import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -75,6 +76,13 @@ public class AppSelectorActivity extends AppCompatActivity {
 
     }
 
+    private void setRecyclerView() {
+        recyclerView = findViewById(R.id.appRecyclerview);
+        recyclerView.setAdapter(appListAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.save_menu, menu);
@@ -91,12 +99,6 @@ public class AppSelectorActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private void setRecyclerView() {
-        recyclerView = findViewById(R.id.appRecyclerview);
-        recyclerView.setAdapter(appListAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
     private void saveApps() {

@@ -2,10 +2,14 @@ package com.example.alertless.view.adapters;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -28,6 +32,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.AppViewH
     class AppViewHolder extends RecyclerView.ViewHolder {
 
         private String packageName;
+        private final ImageView appIcon;
         private final TextView appTextView;
         private final Switch appItemSwitch;
 
@@ -37,6 +42,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.AppViewH
             super(itemView);
             appTextView = itemView.findViewById(R.id.recycler_item_text_view);
             appItemSwitch = itemView.findViewById(R.id.recycler_item_switch);
+            appIcon = itemView.findViewById(R.id.app_image);
 
             appTextView.setClickable(true);
             appItemSwitch.setOnCheckedChangeListener(getSwitchChangeListener());
@@ -75,7 +81,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.AppViewH
     @NonNull
     @Override
     public AppViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = mInflater.inflate(R.layout.recyclerview_item, parent, false);
+        View itemView = mInflater.inflate(R.layout.apps_recyclerview_item, parent, false);
         return new AppViewHolder(itemView);
     }
 
@@ -84,6 +90,14 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.AppViewH
         if (mApps != null) {
 
             AppDetailsModel current = mApps.get(position);
+
+            try {
+                Drawable icon = this.mContext.getPackageManager().getApplicationIcon(current.getPackageName());
+                holder.appIcon.setImageDrawable(icon);
+            } catch (PackageManager.NameNotFoundException e) {
+                Log.i(TAG, e.getMessage());
+            }
+
             holder.appTextView.setText(current.getAppName());
 
             boolean switchState = this.getEnabledApps().contains(current);
