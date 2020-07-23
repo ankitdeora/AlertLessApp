@@ -10,7 +10,7 @@
         android:id="@+id/scheduleBtn"
         android:layout_width="166dp"
         android:layout_height="43dp"
-        android:layout_marginTop="124dp"
+        android:layout_marginTop="36dp"
         android:onClick="schedule"
         android:text="@string/next_activity_btn"
         app:layout_constraintEnd_toEndOf="parent"
@@ -18,60 +18,66 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profileEditText" />
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/silentOnlyAppRecyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="473dp"
+        android:scrollbarStyle="outsideOverlay"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/silentMoreAppsBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scheduleBtn"
+        tools:listitem="@layout/silent_apps_recyclerview_item" />
+
     <Button
         android:id="@+id/silentMoreAppsBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
+        android:layout_marginBottom="24dp"
         android:onClick="silentMoreApps"
         android:text="Silent More Apps"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/scheduleBtn" />
+        app:layout_constraintHorizontal_bias="0.523"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/profileEditText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="72dp"
+        android:layout_width="243dp"
+        android:layout_height="46dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="44dp"
         android:ems="10"
-        android:hint="add profile name"
+        android:hint="Profile Name"
         android:inputType="textPersonName"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/recycler_item_text_view" />
-
-    <Button
-        android:id="@+id/profileAddBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="64dp"
-        android:onClick="saveProfileName"
-        android:text="save"
-        app:layout_constraintBaseline_toBaselineOf="@+id/profileEditText"
-        app:layout_constraintStart_toEndOf="@+id/profileEditText" />
-
-    <Button
-        android:id="@+id/deleteBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:layout_marginEnd="24dp"
-        android:onClick="deleteProfile"
-        android:text="Delete"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profileAddBtn" />
-
-    <TextView
-        android:id="@+id/recycler_item_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="92dp"
-        android:layout_marginTop="48dp"
-        android:hint="Unsaved Profile"
-        android:textSize="28sp"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/add_profile_icon"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/add_profile_icon"
+        android:layout_width="45dp"
+        android:layout_height="44dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="44dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_profile_icon_black_24dp" />
+
+    <ImageView
+        android:id="@+id/save_profile_name"
+        android:layout_width="45dp"
+        android:layout_height="44dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="44dp"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:onClick="saveProfileName"
+        android:padding="3dp"
+        app:layout_constraintStart_toEndOf="@+id/profileEditText"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_done_black_24dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

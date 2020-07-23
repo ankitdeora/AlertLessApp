@@ -2,6 +2,8 @@ package com.example.alertless.database.repositories;
 
 import android.app.Application;
 
+import androidx.lifecycle.LiveData;
+
 import com.example.alertless.database.dao.ProfileAppsDao;
 import com.example.alertless.database.dao.ProfileDao;
 import com.example.alertless.database.dao.ProfileScheduleDao;
@@ -17,6 +19,8 @@ import com.example.alertless.models.ScheduleModel;
 import com.example.alertless.utils.DBUtils;
 import com.example.alertless.utils.ValidationUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,6 +105,21 @@ public class ProfileRepository extends ProfileDetailsRepository{
                 profileId, profile.getApps(), errMsg);
     }
 
+    public void removeProfileApps(String profileName, AppDetailsModel... apps) throws AlertlessDatabaseException {
+        ValidationUtils.validateInput(profileName);
+        ValidationUtils.validateInput(apps);
+        removeProfileAppsList(profileName, Arrays.asList(apps));
+    }
+
+    public void removeProfileAppsList(String profileName, List<AppDetailsModel> apps) throws AlertlessDatabaseException {
+        ValidationUtils.validateInput(profileName);
+        ValidationUtils.validateInput(apps);
+
+        String profileId = checkAndGetProfileId(profileName);
+        String errMsg = String.format("Could not remove apps for profile: %s", profileName);
+        DBUtils.executeTask(this.profileAppsDao::removeProfileApps, profileId, apps, errMsg);
+    }
+
     public List<AppDetailsModel> getProfileApps(String profileName) throws AlertlessDatabaseException {
         String profileId = checkAndGetProfileId(profileName);
 
@@ -108,4 +127,16 @@ public class ProfileRepository extends ProfileDetailsRepository{
         return DBUtils.executeTaskAndGet(this.profileAppsDao::getProfileSilentApps, profileId, errMsg);
     }
 
+    public LiveData<List<ProfileAppRelation>> getLiveProfileApps(String profileName) throws AlertlessDatabaseException {
+        String profileId = checkAndGetProfileId(profileName);
+
+        return this.profileAppsDao.findLiveProfileApps(profileId);
+    }
+
+    public List<AppDetailsModel> getAppModelsFromRelations(List<ProfileAppRelation> relations) throws AlertlessDatabaseException {
+        ValidationUtils.validateInput(relations);
+
+        String errMsg = String.format("Could not get AppModels from relations");
+        return DBUtils.executeTaskAndGet(this.profileAppsDao::getAppModelsFromRelations, relations, errMsg);
+    }
 }

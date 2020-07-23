@@ -6,6 +6,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:actionMenuTextAppearance">@style/menu_text_style</item>
     </style>
 
     <!-- The default font for RecyclerView items is too small.
@@ -15,5 +16,18 @@
         <item name="android:layout_marginBottom">8dp</item>
         <item name="android:paddingLeft">8dp</item>
         <item name="android:textAppearance">@android:style/TextAppearance.Large</item>
+    </style>
+
+    <style name="menu_text_style" parent="@android:style/TextAppearance.DeviceDefault.Widget.ActionBar.Menu">
+        <item name="android:textSize">17sp</item>
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+
+    <!--    ActionModeTheme -->
+    <style name="ActionModeTheme" parent="AppTheme">
+<!--        <item name="actionModeStyle">@style/AppTheme</item>-->
+        <item name="windowActionModeOverlay">true</item>
+        <item name="actionModeCloseDrawable">@drawable/ic_delete_white_24dp</item>
+        <item name="actionMenuTextColor">@color/white</item>
     </style>
 </resources>

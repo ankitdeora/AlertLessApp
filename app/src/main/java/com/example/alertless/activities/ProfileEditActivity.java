@@ -4,13 +4,17 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.alertless.R;
 import com.example.alertless.enums.ButtonState;
@@ -21,9 +25,11 @@ import com.example.alertless.models.AppDetailsModel;
 import com.example.alertless.models.Profile;
 import com.example.alertless.models.ProfileDetailsModel;
 import com.example.alertless.models.ScheduleModel;
+import com.example.alertless.utils.ActivityUtils;
 import com.example.alertless.utils.Constants;
 import com.example.alertless.utils.StringUtils;
 import com.example.alertless.utils.ToastUtils;
+import com.example.alertless.view.adapters.SilentAppListAdapter;
 
 
 import java.util.List;
@@ -52,28 +58,79 @@ public class ProfileEditActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_edit);
 
+        try {
+            initStates();
+        } catch (AlertlessDatabaseException e) {
+            ActivityUtils.finishActivityWithErr(Constants.APP_SELECTOR_ERROR, e.getMessage(), this);
+        }
+    }
+
+    private void initStates() throws AlertlessDatabaseException {
         currentProfile = (Profile) getIntent().getSerializableExtra(Constants.CURRENT_PROFILE);
 
         if (currentProfile != null && currentProfile.getDetails() != null) {
             String profileName = currentProfile.getDetails().getName();
 
-            EditText profileEditText = (EditText) findViewById(R.id.profileEditText);
+            EditText profileEditText = findViewById(R.id.profileEditText);
             profileEditText.setText(profileName);
 
             updateProfileTextView();
+
+            SilentAppListAdapter silentAppListAdapter = getSilentAppListAdapter(profileName);
+
+            profileRepository.getLiveProfileApps(profileName).observe(this, profileAppRelations -> {
+                try {
+                    List<AppDetailsModel> appModels = profileRepository.getAppModelsFromRelations(profileAppRelations);
+                    silentAppListAdapter.setSilentApps(appModels);
+                } catch (AlertlessDatabaseException e) {
+                    Log.i(TAG, e.getMessage());
+                    ActivityUtils.finishActivityWithErr(Constants.APP_SELECTOR_ERROR, e.getMessage(), this);
+                }
+
+            });
+
         } else {
 
             if (currentProfile == null) {
                 currentProfile = new Profile();
             }
 
+            setTitle("Unknown Profile");
             setButtonsState(ButtonState.DISABLED);
         }
     }
 
+    private SilentAppListAdapter getSilentAppListAdapter(String profileName) {
+
+        RecyclerView recyclerView = findViewById(R.id.silentOnlyAppRecyclerview);
+        final SilentAppListAdapter adapter = new SilentAppListAdapter(this, getApplication(), profileName);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+
+        return adapter;
+    }
+
     private void updateProfileTextView() {
-        TextView profileTextView = findViewById(R.id.recycler_item_text_view);
-        profileTextView.setText("Profile : " + currentProfile.getDetails().getName());
+        setTitle(currentProfile.getDetails().getName());
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.done_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.done_app_btn) {
+            doneWithProfileEdit();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -117,6 +174,10 @@ public class ProfileEditActivity extends AppCompatActivity {
         Intent intent = new Intent(this, AppSelectorActivity.class);
         intent.putExtra(Constants.CURRENT_PROFILE, currentProfile);
         startActivityForResult(intent, LAUNCH_APP_SELECTOR_ACTIVITY);
+    }
+
+    public void doneWithProfileEdit() {
+        finish();
     }
 
     public void saveProfileName(View view) {
@@ -168,27 +229,6 @@ public class ProfileEditActivity extends AppCompatActivity {
 
         Button silentMoreAppsBtn = findViewById(R.id.silentMoreAppsBtn);
         silentMoreAppsBtn.setEnabled(setEnabled);
-    }
-
-    public void deleteProfile(View view) {
-        final String profileName = checkAndGetProfileNameFromView();
-
-        if (StringUtils.isBlank(profileName)) {
-            ToastUtils.showToast(getApplicationContext(),"Profile Name Empty !!!");
-            return;
-        }
-
-        // TODO: show dialog for user to confirm if he/she really wants to delete?
-        try {
-            profileRepository.deleteProfile(profileName);
-            ToastUtils.showToast(getApplicationContext(),"Deleted Profile : " + profileName);
-
-            finish();
-        } catch (AlertlessException e) {
-            Log.e(TAG, e.getMessage(), e);
-            ToastUtils.showToast(getApplicationContext(), e.getMessage());
-        }
-
     }
 
     public void getProfile(View view) {

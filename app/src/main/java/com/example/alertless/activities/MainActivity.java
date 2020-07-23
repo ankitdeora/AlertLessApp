@@ -2,7 +2,11 @@ package com.example.alertless.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
@@ -13,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.alertless.R;
 import com.example.alertless.entities.ProfileDetailsEntity;
 import com.example.alertless.utils.Constants;
+import com.example.alertless.utils.ToastUtils;
 import com.example.alertless.view.adapters.ProfileListAdapter;
 import com.example.alertless.view.models.ProfileViewModel;
 
@@ -48,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
+        registerForContextMenu(recyclerView);
         return adapter;
     }
 

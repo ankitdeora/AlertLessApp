@@ -15,6 +15,7 @@ import com.example.alertless.utils.Constants;
 import com.example.alertless.utils.ToastUtils;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -27,22 +28,21 @@ public class AlertNotifyService extends NotificationListenerService {
 
     Context context;
     ProfileRepository profileRepository;
+    Map<String, Integer> silentedMap;
 
     @Override
     public void onCreate() {
         super.onCreate();
         context = getApplicationContext();
+        silentedMap = new HashMap<>();
 
         profileRepository = ProfileRepository.getInstance(getApplication());
-        profileRepository.getActiveProfiles().observeForever(activeProfiles -> {
-
-            Optional.ofNullable(activeProfiles).ifPresent(activeProfilesList -> {
-                String toastMsg = "Active Profiles : " + activeProfiles.size();
-                Log.i(TAG, toastMsg);
-                ToastUtils.showToast(getApplicationContext(), toastMsg);
-            });
-
-        });
+        profileRepository.getActiveProfiles().observeForever(activeProfiles -> Optional.ofNullable(activeProfiles).ifPresent(activeProfilesList -> {
+            String toastMsg = "Active Profiles : " + activeProfiles.size();
+            Log.i(TAG, toastMsg);
+            Log.i(TAG, silentedMap.toString());
+            ToastUtils.showToast(getApplicationContext(), silentedMap.toString());
+        }));
     }
 
     @Override
@@ -110,10 +110,25 @@ public class AlertNotifyService extends NotificationListenerService {
 
             if (schedule.isActive()) {
                 String key = sbn.getKey();
+                String packageName = sbn.getPackageName();
+
+                // cancel notification
                 this.cancelNotification(key);
-                ToastUtils.showToast(context, "Cancelled notification for app : " + sbn.getPackageName());
+
+                updateSilentMap(packageName);
+                ToastUtils.showToast(context, "Cancelled notification for app : " + packageName);
                 return;
             }
+        }
+    }
+
+    private void updateSilentMap(String packageName) {
+        Integer count = silentedMap.get(packageName);
+
+        if (count == null) {
+            silentedMap.put(packageName, 1);
+        } else {
+            silentedMap.put(packageName, count + 1);
         }
     }
 

@@ -19,11 +19,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.alertless.R;
 import com.example.alertless.models.AppDetailsModel;
 import com.example.alertless.utils.Constants;
+import com.example.alertless.utils.ToastUtils;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.AppViewHolder> {
@@ -51,12 +50,19 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.AppViewH
         private CompoundButton.OnCheckedChangeListener getSwitchChangeListener() {
             return (buttonView, isChecked) -> {
 
-                AppDetailsModel clickedModel = modelMap.get(packageName);
+                int pos = getAdapterPosition();
+                if (pos != RecyclerView.NO_POSITION) {
 
-                if (isChecked && clickedModel != null) {
-                    enabledApps.add(clickedModel);
+                    AppDetailsModel clickedModel = mApps.get(pos);
+
+                    if (isChecked && clickedModel != null) {
+                        enabledApps.add(clickedModel);
+                    } else {
+                        enabledApps.remove(clickedModel);
+                    }
                 } else {
-                    enabledApps.remove(clickedModel);
+                    String msg = String.format("Clicked position : %s is invalid !!!", pos);
+                    ToastUtils.showToast(mContext, msg);
                 }
             };
         }
@@ -66,7 +72,6 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.AppViewH
     private final LayoutInflater mInflater;
     private List<AppDetailsModel> mApps; // Cached copy of apps
     private Set<AppDetailsModel> enabledApps;
-    private Map<String, AppDetailsModel> modelMap;
 
     public AppListAdapter(Context context, Application application) {
         this.mContext = context;
@@ -126,20 +131,6 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.AppViewH
 
     private void updateDataset(List<AppDetailsModel> newApps) {
         this.mApps = newApps;
-        populateModelMap();
-    }
-
-    private void populateModelMap() {
-        if (this.mApps != null) {
-
-            if (this.modelMap == null) {
-                this.modelMap = new HashMap<>();
-            }
-
-            for (AppDetailsModel appModel : this.mApps) {
-                this.modelMap.put(appModel.getPackageName(), appModel);
-            }
-        }
     }
 
     @Override

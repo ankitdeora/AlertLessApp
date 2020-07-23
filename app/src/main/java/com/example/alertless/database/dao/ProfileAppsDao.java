@@ -2,6 +2,7 @@ package com.example.alertless.database.dao;
 
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Query;
 import androidx.room.Transaction;
@@ -17,8 +18,10 @@ import com.example.alertless.utils.ValidationUtils;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Dao
 public abstract class ProfileAppsDao extends BaseDao<ProfileAppRelation, BaseModel> {
@@ -43,8 +46,14 @@ public abstract class ProfileAppsDao extends BaseDao<ProfileAppRelation, BaseMod
     @Query("SELECT * FROM profile_apps WHERE profile_id = :profileId")
     public abstract List<ProfileAppRelation> findProfileApps(String profileId);
 
+    @Query("SELECT * FROM profile_apps WHERE profile_id = :profileId")
+    public abstract LiveData<List<ProfileAppRelation>> findLiveProfileApps(String profileId);
+
     @Query("SELECT * FROM profile_apps WHERE app_id = :appId")
     public abstract List<ProfileAppRelation> findRelationForAppId(String appId);
+
+    @Query("DELETE FROM profile_apps WHERE profile_id = :profileId AND app_id = :appId")
+    public abstract void deleteProfileApp(String profileId, String appId);
 
     @Transaction
     public List<ProfileAppRelation> createOrUpdateProfileApps(String profileId, List<AppDetailsModel> apps) {
@@ -91,6 +100,24 @@ public abstract class ProfileAppsDao extends BaseDao<ProfileAppRelation, BaseMod
     }
 
     @Transaction
+    public void removeProfileApps(String profileId, List<AppDetailsModel> apps) {
+        ValidationUtils.validateInput(profileId);
+        ValidationUtils.validateInput(apps);
+
+        apps.stream()
+                .map(AppDetailsModel::getPackageName)
+                .map(this.appDetailsDao::findAppByPackage)
+                .map(AppDetailsEntity::getId)
+                .forEach(appId -> {
+                    this.deleteProfileApp(profileId, appId);
+
+                    if (!isAppReferredByOther(appId, profileId)) {
+                        this.appDetailsDao.delete(appId);
+                    }
+                });
+    }
+
+    @Transaction
     public List<AppDetailsModel> getProfileSilentApps(String profileId) {
         ValidationUtils.validateInput(profileId);
 
@@ -105,7 +132,8 @@ public abstract class ProfileAppsDao extends BaseDao<ProfileAppRelation, BaseMod
         return appModels;
     }
 
-    private List<AppDetailsModel> getAppModelsFromRelations(List<ProfileAppRelation> relations) {
+    @Transaction
+    public List<AppDetailsModel> getAppModelsFromRelations(List<ProfileAppRelation> relations) {
         ValidationUtils.validateInput(relations);
 
         return relations.stream()
@@ -133,9 +161,12 @@ public abstract class ProfileAppsDao extends BaseDao<ProfileAppRelation, BaseMod
 
     private boolean isAppReferredByOther(ProfileAppRelation relation) {
         ValidationUtils.validateInput(relation);
+        return isAppReferredByOther(relation.getAppId(), relation.getProfileId());
+    }
 
-        String appId = relation.getAppId();
-        String profileId = relation.getProfileId();
+    private boolean isAppReferredByOther (String appId, String profileId) {
+        ValidationUtils.validateInput(appId);
+        ValidationUtils.validateInput(profileId);
 
         List<ProfileAppRelation> relationsForAppId = findRelationForAppId(appId);
         return relationsForAppId != null && !relationsForAppId.isEmpty() && (relationsForAppId.size() > 1 || !relationsForAppId.get(0).getProfileId().equals(profileId));

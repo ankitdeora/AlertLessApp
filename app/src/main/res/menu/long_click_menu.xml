@@ -3,10 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/save_app_btn"
-        android:icon="@drawable/ic_save_white_28dp"
-        android:title="SAVE"
+        android:id="@+id/delete_btn"
+        android:icon="@drawable/ic_delete_white_24dp"
+        android:title="DELETE"
         app:showAsAction="always"
-        android:orderInCategory="0" />
+        android:orderInCategory="0"/>
 
 </menu>

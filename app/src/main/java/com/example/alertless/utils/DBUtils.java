@@ -7,6 +7,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -42,6 +43,17 @@ public class DBUtils {
         return executeTaskAndGet(supplier, errMsg);
     }
 
+    public static <T,U> void executeTask(BiConsumer<T, U> biConsumer, T inputA, U inputB, String errMsg) throws AlertlessDatabaseException {
+        Runnable dbRunnableTask = getDBRunnableTask(biConsumer, inputA, inputB);
+
+        try {
+            executeTask(dbRunnableTask);
+        } catch (Exception e) {
+            String exceptionMsg = String.format(errMsg + " due to : %s",  e.getMessage());
+            throw new AlertlessDatabaseException(exceptionMsg, e);
+        }
+    }
+
     private static void executeTask(Runnable task) {
         AppDatabase.databaseWriteExecutor.execute(task);
     }
@@ -61,25 +73,19 @@ public class DBUtils {
     }
 
     public static <T> Runnable getDBRunnableTask(Consumer<T> consumer, T val) {
-        return new Runnable() {
-            @Override
-            public void run() {
-                consumer.accept(val);
-            }
-        };
+        return () -> consumer.accept(val);
     }
 
     public static <T> Callable<T> getDBCallableTask(Supplier<T> supplier) {
-        return new Callable<T>() {
-            @Override
-            public T call() {
-                return supplier.get();
-            }
-        };
+        return () -> supplier.get();
     }
 
     public static <T, R> Callable<R> getDBTask(Function<T,R> fn, T val) {
         return getDBCallableTask(() -> fn.apply(val));
+    }
+
+    public static <T,U> Runnable getDBRunnableTask(BiConsumer<T,U> biConsumer, T inputA, U inputB) {
+        return () -> biConsumer.accept(inputA, inputB);
     }
 }
 

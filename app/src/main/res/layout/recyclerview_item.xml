@@ -2,32 +2,66 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:id="@+id/recycler_item_layout">
 
     <TextView
         android:id="@+id/recycler_item_text_view"
         style="@style/word_title"
-        android:layout_width="250dp"
+        android:layout_width="178dp"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_marginStart="22dp"
-        android:layout_marginTop="10dp"
-        android:maxWidth="280dp"
-        android:foreground="?android:attr/selectableItemBackground"
+        android:layout_marginTop="9dp"
         android:hint="Item"
+        android:maxWidth="280dp"
         android:padding="@dimen/big_padding" />
+
+    <ImageView
+        android:id="@+id/edit_profile_btn"
+        android:layout_width="41dp"
+        android:layout_height="37dp"
+        android:layout_alignParentTop="true"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="87dp"
+        android:layout_marginTop="23dp"
+        android:layout_toEndOf="@+id/recycler_item_text_view"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:padding="3dp"
+        android:src="@drawable/ic_edit_black_24dp" />
+
+    <ImageView
+        android:id="@+id/profile_divider_b"
+        android:layout_width="44dp"
+        android:layout_height="76dp"
+        android:layout_alignParentTop="true"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="116dp"
+        android:layout_marginTop="0dp"
+        android:layout_toEndOf="@+id/recycler_item_text_view"
+        android:src="@drawable/ic_divider" />
+
+    <ImageView
+        android:id="@+id/profile_divider_a"
+        android:layout_width="44dp"
+        android:layout_height="76dp"
+        android:layout_alignParentTop="true"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="57dp"
+        android:layout_marginTop="0dp"
+        android:layout_toEndOf="@+id/recycler_item_text_view"
+        android:src="@drawable/ic_divider" />
 
     <Switch
         android:id="@+id/recycler_item_switch"
         android:layout_width="62dp"
         android:layout_height="wrap_content"
-
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-
         android:layout_marginTop="22dp"
         android:layout_marginEnd="9dp"
         android:padding="10dp" />
+
 
 </RelativeLayout>
