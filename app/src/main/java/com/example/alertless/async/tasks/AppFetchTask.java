@@ -2,11 +2,13 @@ package com.example.alertless.async.tasks;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
 import com.example.alertless.models.AppDetailsModel;
 import com.example.alertless.utils.AppUtils;
+import com.example.alertless.utils.ToastUtils;
 import com.example.alertless.view.adapters.AppListAdapter;
 
 import java.util.List;
@@ -19,13 +21,15 @@ public class AppFetchTask extends AsyncTask<Void, Void, List<AppDetailsModel>> {
     private ProgressBar spinner;
     private AppListAdapter appListAdapter;
     private Set<AppDetailsModel> enabledApps;
+    private List<AppDetailsModel> allUserApps;
 
-    public AppFetchTask(Context mContext, View view, ProgressBar spinner, AppListAdapter appListAdapter, Set<AppDetailsModel> enabledApps) {
+    public AppFetchTask(Context mContext, View view, ProgressBar spinner, AppListAdapter appListAdapter, List<AppDetailsModel> allUserApps, Set<AppDetailsModel> enabledApps) {
         this.mContext = mContext;
         this.view = view;
         this.spinner = spinner;
         this.appListAdapter = appListAdapter;
         this.enabledApps = enabledApps;
+        this.allUserApps = allUserApps;
     }
 
     @Override
@@ -45,6 +49,8 @@ public class AppFetchTask extends AsyncTask<Void, Void, List<AppDetailsModel>> {
         spinner.setVisibility(View.GONE);
         view.setVisibility(View.VISIBLE);
         appListAdapter.setApps(userApps, this.enabledApps);
+        this.allUserApps.addAll(userApps);
+
         super.onPostExecute(userApps);
     }
 }

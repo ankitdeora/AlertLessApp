@@ -57,14 +57,10 @@ public class AppSelectorActivity extends AppCompatActivity {
                                                         new HashSet<>(this.currentProfile.getApps()) :
                                                         null;
 
-            AppFetchTask appFetchTask = new AppFetchTask(this, recyclerView, progressBar, appListAdapter, enabledAppsSet);
-            allUserApps = appFetchTask.execute().get();
+            allUserApps = new ArrayList<>();
+            new AppFetchTask(this, recyclerView, progressBar, appListAdapter, allUserApps, enabledAppsSet).execute();
 
-            String msg = String.format("Got user Apps : %s", allUserApps.size());
-            ToastUtils.showToast(getApplication(), msg);
-            Log.i(TAG, msg);
-
-        } catch (AlertlessDatabaseException | InterruptedException | ExecutionException e) {
+        } catch (AlertlessDatabaseException e) {
             Log.i(TAG, e.getMessage(), e);
             ActivityUtils.finishActivityWithErr(Constants.APP_SELECTOR_ERROR, e.getMessage(), this);
         }
