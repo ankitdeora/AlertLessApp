@@ -2,11 +2,7 @@ package com.example.alertless.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.ContextMenu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
@@ -17,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.alertless.R;
 import com.example.alertless.entities.ProfileDetailsEntity;
 import com.example.alertless.utils.Constants;
-import com.example.alertless.utils.ToastUtils;
 import com.example.alertless.view.adapters.ProfileListAdapter;
 import com.example.alertless.view.models.ProfileViewModel;
 
@@ -28,13 +23,15 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getName() + Constants.TAG_SUFFIX;
     private ProfileViewModel profileViewModel;
+    private RecyclerView recyclerView;
+    private ProfileListAdapter profileListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ProfileListAdapter profileListAdapter = getProfileListAdapter();
+        setProfileListAdapter();
 
         // Init Profile view model
         profileViewModel = ViewModelProviders.of(this).get(ProfileViewModel.class);
@@ -46,15 +43,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private ProfileListAdapter getProfileListAdapter() {
-        RecyclerView recyclerView = findViewById(R.id.profileRecyclerview);
-        final ProfileListAdapter adapter = new ProfileListAdapter(this, getApplication());
-        recyclerView.setAdapter(adapter);
+    private void setProfileListAdapter() {
+        recyclerView = findViewById(R.id.profileRecyclerview);
+        profileListAdapter = new ProfileListAdapter(this, getApplication());
+        recyclerView.setAdapter(profileListAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-
         registerForContextMenu(recyclerView);
-        return adapter;
     }
 
     public void editProfile(View view) {

@@ -20,6 +20,7 @@ import com.example.alertless.R;
 import com.example.alertless.models.AppDetailsModel;
 import com.example.alertless.utils.Constants;
 import com.example.alertless.utils.ToastUtils;
+import com.example.alertless.view.caches.AppIconCache;
 
 import java.util.HashSet;
 import java.util.List;
@@ -70,13 +71,16 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.AppViewH
 
     private final Context mContext;
     private final LayoutInflater mInflater;
-    private List<AppDetailsModel> mApps; // Cached copy of apps
+    private List<AppDetailsModel> mApps;
     private Set<AppDetailsModel> enabledApps;
+    private final AppIconCache appIconCache;
+
 
     public AppListAdapter(Context context, Application application) {
         this.mContext = context;
         this.mInflater = LayoutInflater.from(context);
         this.enabledApps = new HashSet<>();
+        this.appIconCache = AppIconCache.getInstance();
     }
 
     public Set<AppDetailsModel> getEnabledApps() {
@@ -95,10 +99,19 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.AppViewH
         if (mApps != null) {
 
             AppDetailsModel current = mApps.get(position);
+            String packageName = current.getPackageName();
 
             try {
-                Drawable icon = this.mContext.getPackageManager().getApplicationIcon(current.getPackageName());
+                Drawable icon = appIconCache.getDrawableFromMemCache(packageName);
+
+                if (icon == null) {
+                    // add to cache
+                    icon = this.mContext.getPackageManager().getApplicationIcon(packageName);
+                    appIconCache.addDrawableToMemoryCache(packageName, icon);
+                }
+
                 holder.appIcon.setImageDrawable(icon);
+
             } catch (PackageManager.NameNotFoundException e) {
                 Log.i(TAG, e.getMessage());
             }
@@ -108,7 +121,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.AppViewH
             boolean switchState = this.getEnabledApps().contains(current);
 
             holder.appItemSwitch.setChecked(switchState);
-            holder.packageName = current.getPackageName();
+            holder.packageName = packageName;
         } else {
             // Covers the case of data not being ready yet.
             holder.appTextView.setText("No Apps found");

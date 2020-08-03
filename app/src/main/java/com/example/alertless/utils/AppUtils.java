@@ -2,13 +2,18 @@ package com.example.alertless.utils;
 
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 import com.example.alertless.models.AppDetailsModel;
+import com.example.alertless.view.caches.AppIconCache;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class AppUtils {
+
+    private static final String TAG = AppUtils.class.getName() + Constants.TAG_SUFFIX;
 
     private static List<ApplicationInfo> getUserAppsInfo(PackageManager packageManager) {
 
@@ -24,7 +29,7 @@ public class AppUtils {
         return userApps;
     }
 
-    public static List<AppDetailsModel> getUserAppsModel(PackageManager packageManager) {
+    public static List<AppDetailsModel> getUserAppsModel(PackageManager packageManager, AppIconCache appIconCache) {
         List<ApplicationInfo> userAppsInfo = getUserAppsInfo(packageManager);
 
         return userAppsInfo.stream()
@@ -32,12 +37,30 @@ public class AppUtils {
                     String appName = String.valueOf(packageManager.getApplicationLabel(appInfo));
                     String packageName = appInfo.packageName;
 
+                    // add icon to cache
+                    addIconToCache(appIconCache, packageManager, packageName);
+
                     return AppDetailsModel.builder()
                             .appName(appName)
                             .packageName(packageName)
                             .build();
                 })
                 .collect(Collectors.toList());
+    }
 
+    private static void addIconToCache(AppIconCache appIconCache, PackageManager packageManager, String packageName) {
+
+        Drawable icon = appIconCache.getDrawableFromMemCache(packageName);
+
+        if (icon == null) {
+            try {
+
+                icon = packageManager.getApplicationIcon(packageName);
+                appIconCache.addDrawableToMemoryCache(packageName, icon);
+
+            } catch (PackageManager.NameNotFoundException e) {
+                Log.i(TAG, e.getMessage());
+            }
+        }
     }
 }

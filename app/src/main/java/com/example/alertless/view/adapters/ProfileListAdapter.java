@@ -47,16 +47,13 @@ public class ProfileListAdapter extends RecyclerView.Adapter<ProfileListAdapter.
         private final TextView profileItemView;
         private final Switch profileItemSwitch;
         private final RelativeLayout itemLayout;
-        private final ImageView editIcon;
 
         private ProfileViewHolder(View itemView) {
             super(itemView);
             profileItemView = itemView.findViewById(R.id.recycler_item_text_view);
             profileItemSwitch = itemView.findViewById(R.id.recycler_item_switch);
             itemLayout = itemView.findViewById(R.id.recycler_item_layout);
-            editIcon = itemView.findViewById(R.id.edit_profile_btn);
 
-            editIcon.setOnClickListener(getProfileOnClickListener());
             profileItemSwitch.setOnCheckedChangeListener(getSwitchChangeListener());
         }
 
@@ -69,6 +66,8 @@ public class ProfileListAdapter extends RecyclerView.Adapter<ProfileListAdapter.
                     selectedItems.add(item);
                     itemLayout.setBackgroundColor(Color.LTGRAY);
                 }
+            } else {
+                startProfileEditActivity(item);
             }
         }
 
@@ -97,22 +96,27 @@ public class ProfileListAdapter extends RecyclerView.Adapter<ProfileListAdapter.
                 if(pos != RecyclerView.NO_POSITION){
 
                     ProfileDetailsEntity profileDetails = mProfileDetails.get(pos);
-                    ProfileDetailsModel detailsModel = profileDetails.getModel();
+                    startProfileEditActivity(profileDetails);
 
-                    Profile profile = Profile.builder()
-                            .details(detailsModel)
-                            .build();
-
-                    Intent intent = new Intent(mContext, ProfileEditActivity.class);
-                    intent.putExtra(Constants.CURRENT_PROFILE, profile);
-
-                    Activity parentActivity = (Activity) mContext;
-                    parentActivity.startActivity(intent);
                 } else {
                     String msg = String.format("Clicked position : %s is invalid !!!", pos);
                     ToastUtils.showToast(mContext, msg);
                 }
             };
+        }
+
+        private void startProfileEditActivity(ProfileDetailsEntity profileDetails) {
+            ProfileDetailsModel detailsModel = profileDetails.getModel();
+
+            Profile profile = Profile.builder()
+                    .details(detailsModel)
+                    .build();
+
+            Intent intent = new Intent(mContext, ProfileEditActivity.class);
+            intent.putExtra(Constants.CURRENT_PROFILE, profile);
+
+            Activity parentActivity = (Activity) mContext;
+            parentActivity.startActivity(intent);
         }
 
         private CompoundButton.OnCheckedChangeListener getSwitchChangeListener() {
@@ -202,6 +206,10 @@ public class ProfileListAdapter extends RecyclerView.Adapter<ProfileListAdapter.
         this.mContext = context;
         mInflater = LayoutInflater.from(context);
         profileRepository = ProfileRepository.getInstance(application);
+    }
+
+    public List<ProfileDetailsEntity> getProfiles() {
+        return mProfileDetails;
     }
 
     @NonNull

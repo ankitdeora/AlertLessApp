@@ -17,8 +17,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.alertless.R;
-import com.example.alertless.enums.ButtonState;
 import com.example.alertless.database.repositories.ProfileRepository;
+import com.example.alertless.enums.ButtonState;
 import com.example.alertless.exceptions.AlertlessDatabaseException;
 import com.example.alertless.exceptions.AlertlessException;
 import com.example.alertless.models.AppDetailsModel;
@@ -30,7 +30,6 @@ import com.example.alertless.utils.Constants;
 import com.example.alertless.utils.StringUtils;
 import com.example.alertless.utils.ToastUtils;
 import com.example.alertless.view.adapters.SilentAppListAdapter;
-
 
 import java.util.List;
 import java.util.Optional;
@@ -50,6 +49,7 @@ public class ProfileEditActivity extends AppCompatActivity {
     public static final String NULL_DATA_ERROR = "null Data";
 
 
+    // current state
     private Profile currentProfile;
     private ProfileRepository profileRepository = ProfileRepository.getInstance(getApplication());
 
@@ -59,14 +59,18 @@ public class ProfileEditActivity extends AppCompatActivity {
         setContentView(R.layout.activity_profile_edit);
 
         try {
-            initStates();
+            initStates(savedInstanceState);
         } catch (AlertlessDatabaseException e) {
             ActivityUtils.finishActivityWithErr(Constants.APP_SELECTOR_ERROR, e.getMessage(), this);
         }
     }
 
-    private void initStates() throws AlertlessDatabaseException {
+    private void initStates(Bundle savedInstanceState) throws AlertlessDatabaseException {
         currentProfile = (Profile) getIntent().getSerializableExtra(Constants.CURRENT_PROFILE);
+
+        if ((currentProfile == null || currentProfile.getDetails() == null) && savedInstanceState != null) {
+            currentProfile = (Profile) savedInstanceState.getSerializable(Constants.CURRENT_PROFILE);
+        }
 
         if (currentProfile != null && currentProfile.getDetails() != null) {
             String profileName = currentProfile.getDetails().getName();
@@ -113,6 +117,14 @@ public class ProfileEditActivity extends AppCompatActivity {
 
     private void updateProfileTextView() {
         setTitle(currentProfile.getDetails().getName());
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        // save state
+        outState.putSerializable(Constants.CURRENT_PROFILE, currentProfile);
     }
 
     @Override

@@ -2,13 +2,12 @@ package com.example.alertless.async.tasks;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
 import com.example.alertless.models.AppDetailsModel;
 import com.example.alertless.utils.AppUtils;
-import com.example.alertless.utils.ToastUtils;
+import com.example.alertless.view.caches.AppIconCache;
 import com.example.alertless.view.adapters.AppListAdapter;
 
 import java.util.List;
@@ -41,7 +40,7 @@ public class AppFetchTask extends AsyncTask<Void, Void, List<AppDetailsModel>> {
 
     @Override
     protected List<AppDetailsModel> doInBackground(Void... voids) {
-        return AppUtils.getUserAppsModel(mContext.getPackageManager());
+        return AppUtils.getUserAppsModel(mContext.getPackageManager(), AppIconCache.getInstance());
     }
 
     @Override

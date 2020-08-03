@@ -21,6 +21,7 @@ import com.example.alertless.exceptions.AlertlessDatabaseException;
 import com.example.alertless.models.AppDetailsModel;
 import com.example.alertless.utils.Constants;
 import com.example.alertless.utils.ToastUtils;
+import com.example.alertless.view.caches.AppIconCache;
 import com.example.alertless.view.callbacks.EntityDiffCallBack;
 
 import java.util.List;
@@ -70,14 +71,16 @@ public class SilentAppListAdapter extends RecyclerView.Adapter<SilentAppListAdap
     private String mProfileName;
     private final Context mContext;
     private final LayoutInflater mInflater;
-    private List<AppDetailsModel> mSilentApps; // Cached copy of apps
+    private List<AppDetailsModel> mSilentApps;
     private final ProfileRepository profileRepository;
+    private final AppIconCache appIconCache;
 
     public SilentAppListAdapter(Context context, Application application, String profileName) {
         this.mContext = context;
         this.mInflater = LayoutInflater.from(context);
         profileRepository = ProfileRepository.getInstance(application);
         this.mProfileName = profileName;
+        this.appIconCache = AppIconCache.getInstance();
     }
 
     @NonNull
@@ -92,16 +95,24 @@ public class SilentAppListAdapter extends RecyclerView.Adapter<SilentAppListAdap
         if (mSilentApps != null) {
 
             AppDetailsModel current = mSilentApps.get(position);
+            String packageName = current.getPackageName();
 
             try {
-                Drawable icon = this.mContext.getPackageManager().getApplicationIcon(current.getPackageName());
+                Drawable icon = appIconCache.getDrawableFromMemCache(packageName);
+
+                if (icon == null) {
+                    // add to cache
+                    icon = this.mContext.getPackageManager().getApplicationIcon(packageName);
+                    appIconCache.addDrawableToMemoryCache(packageName, icon);
+                }
+
                 holder.appIcon.setImageDrawable(icon);
             } catch (PackageManager.NameNotFoundException e) {
                 Log.i(TAG, e.getMessage());
             }
 
             holder.appTextView.setText(current.getAppName());
-            holder.packageName = current.getPackageName();
+            holder.packageName = packageName;
         } else {
             // Covers the case of data not being ready yet.
             holder.appTextView.setText("No Apps found");
