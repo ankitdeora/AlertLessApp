@@ -9,8 +9,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -23,21 +26,20 @@ import com.example.alertless.exceptions.AlertlessDatabaseException;
 import com.example.alertless.exceptions.AlertlessException;
 import com.example.alertless.models.AppDetailsModel;
 import com.example.alertless.models.Profile;
-import com.example.alertless.models.ProfileDetailsModel;
 import com.example.alertless.models.ScheduleModel;
 import com.example.alertless.utils.ActivityUtils;
+import com.example.alertless.utils.AlertDialogUtils;
 import com.example.alertless.utils.Constants;
 import com.example.alertless.utils.StringUtils;
 import com.example.alertless.utils.ToastUtils;
 import com.example.alertless.view.adapters.SilentAppListAdapter;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 public class ProfileEditActivity extends AppCompatActivity {
     private static final String TAG = ProfileEditActivity.class.getName() + Constants.TAG_SUFFIX;
-    public static final boolean DEFAULT_PROFILE_SWITCH_STATE = true;
+
     public static final int LAUNCH_SCHEDULER_ACTIVITY = 1;
     public static final int LAUNCH_APP_SELECTOR_ACTIVITY = 2;
 
@@ -75,8 +77,8 @@ public class ProfileEditActivity extends AppCompatActivity {
         if (currentProfile != null && currentProfile.getDetails() != null) {
             String profileName = currentProfile.getDetails().getName();
 
-            EditText profileEditText = findViewById(R.id.profileEditText);
-            profileEditText.setText(profileName);
+            TextView profileTextView = findViewById(R.id.profileTextView);
+            profileTextView.setText(profileName);
 
             updateProfileTextView();
 
@@ -99,7 +101,7 @@ public class ProfileEditActivity extends AppCompatActivity {
                 currentProfile = new Profile();
             }
 
-            setTitle("Unknown Profile");
+            setTitle("Create Profile");
             setButtonsState(ButtonState.DISABLED);
         }
     }
@@ -116,7 +118,7 @@ public class ProfileEditActivity extends AppCompatActivity {
     }
 
     private void updateProfileTextView() {
-        setTitle(currentProfile.getDetails().getName());
+        setTitle("Update Profile");
     }
 
     @Override
@@ -192,45 +194,44 @@ public class ProfileEditActivity extends AppCompatActivity {
         finish();
     }
 
-    public void saveProfileName(View view) {
+    public void editProfileName(View view) {
+        final EditText input = new EditText(this);
+        AlertDialog dialog = AlertDialogUtils.getTextDialog("Update Profile Name !!!", this, input);
 
-        final String profileName = checkAndGetProfileNameFromView();
+        // show dialog
+        dialog.show();
 
-        if (StringUtils.isBlank(profileName)) {
-            ToastUtils.showToast(getApplicationContext(),"Profile Name Empty !!!");
-            return;
-        }
+        //Overriding the handler immediately after show for text validations and existing profile validations
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
 
-        // insert to DB
-        try {
-            if (currentProfile.getDetails() == null) {
-                ProfileDetailsModel profileDetails = new ProfileDetailsModel(profileName, DEFAULT_PROFILE_SWITCH_STATE);
+            String profileNameInDialog = input.getText().toString();
 
-                profileRepository.createProfile(profileDetails);
-
-                // Update state
-                currentProfile.setDetails(profileDetails);
-
-                // Enable buttons
-                setButtonsState(ButtonState.ENABLED);
-
-                ToastUtils.showToast(getApplicationContext(),"Saved Profile : " + profileDetails.toString());
+            if (StringUtils.isBlank(profileNameInDialog)) {
+                ToastUtils.showToast(getApplicationContext(),"Profile Name Empty !!!", Toast.LENGTH_LONG);
             } else {
-                profileRepository.updateProfileDetails(currentProfile.getDetails().getName(), profileName);
+                try {
+                    if (profileRepository.getProfileDetailsByName(profileNameInDialog) != null) {
+                        throw new AlertlessException(String.format("Profile : %s already exists", profileNameInDialog));
+                    }
 
-                // Update state
-                currentProfile.getDetails().setName(profileName);
-                ToastUtils.showToast(getApplicationContext(),"Updated Profile Name to : " + profileName);
+                    profileRepository.updateProfileDetails(currentProfile.getDetails().getName(), profileNameInDialog);
+
+                    // Update states
+                    currentProfile.getDetails().setName(profileNameInDialog);
+                    TextView profileTextView = findViewById(R.id.profileTextView);
+                    profileTextView.setText(profileNameInDialog);
+
+                    // dismiss dialog
+                    dialog.dismiss();
+
+                    ToastUtils.showToast(getApplicationContext(),"Updated Profile Name to : " + profileNameInDialog);
+
+                } catch (AlertlessException e) {
+                    Log.i(TAG, e.getMessage());
+                    ToastUtils.showToast(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG);
+                }
             }
-
-            // Update UI
-            updateProfileTextView();
-
-        } catch (AlertlessException e) {
-            Log.e(TAG, e.getMessage(), e);
-            ToastUtils.showToast(getApplicationContext(), e.getMessage());
-        }
-
+        });
     }
 
     private void setButtonsState(final ButtonState state) {
@@ -243,35 +244,8 @@ public class ProfileEditActivity extends AppCompatActivity {
         silentMoreAppsBtn.setEnabled(setEnabled);
     }
 
-    public void getProfile(View view) {
-
-        // TODO : this is duplicate code from saveProfile() above, try to remove this duplicacy
-        final String profileName = checkAndGetProfileNameFromView();
-
-        if (StringUtils.isBlank(profileName)) {
-            ToastUtils.showToast(getApplicationContext(),"Profile Name Empty !!!");
-            return;
-        }
-
-        ProfileDetailsModel profileDetails = null;
-        try {
-            profileDetails = profileRepository.getProfileDetailsByName(profileName);
-
-            Optional.ofNullable(profileDetails).orElseThrow(() -> {
-                String notFoundMsg = String.format("Profile : %s does not exist !!!", profileName);
-                return new AlertlessDatabaseException(notFoundMsg);
-            });
-
-            ToastUtils.showToast(getApplicationContext(),"Got Profile : " + profileDetails.toString());
-        } catch (AlertlessException e) {
-            Log.e(TAG, e.getMessage(), e);
-            ToastUtils.showToast(getApplicationContext(), e.getMessage());
-        }
-
-    }
-
     public String checkAndGetProfileNameFromView() {
-        EditText profileEditText = (EditText) findViewById(R.id.profileEditText);
-        return profileEditText.getText().toString();
+        TextView profileTextView = findViewById(R.id.profileTextView);
+        return profileTextView.getText().toString();
     }
 }

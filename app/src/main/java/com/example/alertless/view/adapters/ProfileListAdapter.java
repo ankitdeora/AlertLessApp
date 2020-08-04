@@ -90,21 +90,6 @@ public class ProfileListAdapter extends RecyclerView.Adapter<ProfileListAdapter.
             itemView.setOnClickListener(view -> selectItem(current));
         }
 
-        private View.OnClickListener getProfileOnClickListener() {
-            return v -> {
-                int pos = getAdapterPosition();
-                if(pos != RecyclerView.NO_POSITION){
-
-                    ProfileDetailsEntity profileDetails = mProfileDetails.get(pos);
-                    startProfileEditActivity(profileDetails);
-
-                } else {
-                    String msg = String.format("Clicked position : %s is invalid !!!", pos);
-                    ToastUtils.showToast(mContext, msg);
-                }
-            };
-        }
-
         private void startProfileEditActivity(ProfileDetailsEntity profileDetails) {
             ProfileDetailsModel detailsModel = profileDetails.getModel();
 

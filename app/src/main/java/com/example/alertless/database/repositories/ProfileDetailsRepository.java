@@ -16,6 +16,7 @@ import com.example.alertless.utils.ValidationUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 public abstract class ProfileDetailsRepository extends BaseRepository<ProfileDetailsEntity, ProfileDetailsModel> {
@@ -89,7 +90,7 @@ public abstract class ProfileDetailsRepository extends BaseRepository<ProfileDet
     }
 
     public ProfileDetailsModel getProfileDetailsByName(CharSequence name) throws AlertlessException {
-        return getEntityByName(name).getModel();
+        return Optional.ofNullable(getEntityByName(name)).map(ProfileDetailsEntity::getModel).orElse(null);
     }
 
     public LiveData<List<ProfileDetailsEntity>> getAllProfileDetailsEntity() {

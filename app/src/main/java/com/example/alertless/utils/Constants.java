@@ -8,6 +8,8 @@ public class Constants {
     public static final String APP_SELECTOR_RESULT = "APP_SELECTOR_RESULT";
     public static final String APP_SELECTOR_ERROR = "APP_SELECTOR_ERROR";
 
+    public static final boolean DEFAULT_PROFILE_SWITCH_STATE = true;
+
     public static final int UNIQUE_ID_LENGTH = 15;
 
     public static final String ENABLED = "Enabled";
