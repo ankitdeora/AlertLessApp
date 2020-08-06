@@ -6,16 +6,33 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <ca.antonious.materialdaypicker.MaterialDayPicker
+        android:id="@+id/week_day_picker"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:padding="20dp"/>
 
-        <ca.antonious.materialdaypicker.MaterialDayPicker
-            android:id="@+id/week_day_picker"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-    </LinearLayout>
+    <TextView
+        android:id="@+id/startDateWeekSch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:gravity="center_vertical"
+        android:onClick="showWeekScheduleStartDatePickerDialog"
+        android:padding="20dp"
+        android:text="Start Date"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/endDateWeekSch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:gravity="center_vertical"
+        android:onClick="showWeekScheduleEndDatePickerDialog"
+        android:padding="20dp"
+        android:text="End Date"
+        android:textSize="18sp" />
+
 
 </LinearLayout>

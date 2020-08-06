@@ -69,7 +69,7 @@ public class SchedulerActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_scheduler);
+        setContentView(R.layout.scheduler_layout);
 
         initCurrentStates();
     }
@@ -368,7 +368,7 @@ public class SchedulerActivity extends AppCompatActivity {
         switchLayout.removeAllViews();
 
         // switch view to week selector
-        getLayoutInflater().inflate(R.layout.week_selector, switchLayout);
+        getLayoutInflater().inflate(R.layout.week_layout, switchLayout);
 
         this.setCurrentSchedule(this.weekSchedule);
 
@@ -386,7 +386,7 @@ public class SchedulerActivity extends AppCompatActivity {
         switchLayout.removeAllViews();
 
         // switch view to date selector
-        getLayoutInflater().inflate(R.layout.date_selector, switchLayout);
+        getLayoutInflater().inflate(R.layout.date_layout, switchLayout);
 
         RadioGroup dateSelectorRadioGroup = findViewById(R.id.date_selector_radios);
 

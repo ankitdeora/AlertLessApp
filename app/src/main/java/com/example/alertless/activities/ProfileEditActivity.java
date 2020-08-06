@@ -111,7 +111,6 @@ public class ProfileEditActivity extends AppCompatActivity {
         final SilentAppListAdapter adapter = new SilentAppListAdapter(this, getApplication(), profileName);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
         return adapter;
     }

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:weightSum="1">
+
+    <RadioGroup
+        android:id="@+id/date_selector_radios"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checkedButton="@id/individual_selector_radio"
+        android:orientation="vertical"
+        android:layout_weight="0.5"
+        android:padding="30dp">
+
+        <RadioButton
+            android:id="@+id/individual_selector_radio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="onIndividualDatePickerRadioSelection"
+            android:text="One By One"
+            android:gravity="center"/>
+
+        <RadioButton
+            android:id="@+id/range_selector_radio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="onRangeDatePickerRadioSelection"
+            android:text="By Range"
+            android:gravity="center"/>
+    </RadioGroup>
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center_vertical"
+        android:background="@color/daysLabelColor" />
+
+    <TextView
+        android:id="@+id/startDailyTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="0.5"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:gravity="center"
+
+        android:onClick="showMultipleDatePicker"
+        android:padding="15dp"
+        android:text="Choose Dates"
+        android:textColor="@android:color/secondary_text_light"
+        android:textSize="18sp" />
+
+</LinearLayout>
