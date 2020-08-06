@@ -58,7 +58,7 @@ public class ProfileEditActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile_edit);
+        setContentView(R.layout.profile_edit_layout);
 
         try {
             initStates(savedInstanceState);
@@ -102,7 +102,6 @@ public class ProfileEditActivity extends AppCompatActivity {
             }
 
             setTitle("Create Profile");
-            setButtonsState(ButtonState.DISABLED);
         }
     }
 
@@ -196,10 +195,7 @@ public class ProfileEditActivity extends AppCompatActivity {
 
     public void editProfileName(View view) {
         final EditText input = new EditText(this);
-        AlertDialog dialog = AlertDialogUtils.getTextDialog("Update Profile Name !!!", this, input);
-
-        // show dialog
-        dialog.show();
+        AlertDialog dialog = AlertDialogUtils.getTextDialog("Update Profile Name !!!", this, input, currentProfile.getDetails().getName());
 
         //Overriding the handler immediately after show for text validations and existing profile validations
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
@@ -232,20 +228,5 @@ public class ProfileEditActivity extends AppCompatActivity {
                 }
             }
         });
-    }
-
-    private void setButtonsState(final ButtonState state) {
-        boolean setEnabled = ButtonState.ENABLED.equals(state);
-
-        Button scheduleBtn = findViewById(R.id.scheduleBtn);
-        scheduleBtn.setEnabled(setEnabled);
-
-        Button silentMoreAppsBtn = findViewById(R.id.silentMoreAppsBtn);
-        silentMoreAppsBtn.setEnabled(setEnabled);
-    }
-
-    public String checkAndGetProfileNameFromView() {
-        TextView profileTextView = findViewById(R.id.profileTextView);
-        return profileTextView.getText().toString();
     }
 }

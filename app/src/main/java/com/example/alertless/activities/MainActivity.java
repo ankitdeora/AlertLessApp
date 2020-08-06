@@ -71,9 +71,6 @@ public class MainActivity extends AppCompatActivity {
         final EditText input = new EditText(this);
         AlertDialog dialog = AlertDialogUtils.getTextDialog("Add Profile Name !!!",this, input);
 
-        // show dialog
-        dialog.show();
-
         //Overriding the handler immediately after show for text validations and existing profile validations
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
 
