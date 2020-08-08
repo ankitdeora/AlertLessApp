@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 
@@ -19,11 +20,11 @@ import com.applandeo.materialcalendarview.DatePicker;
 import com.applandeo.materialcalendarview.builders.DatePickerBuilder;
 import com.applandeo.materialcalendarview.listeners.OnSelectDateListener;
 import com.example.alertless.R;
+import com.example.alertless.database.repositories.AdminRepository;
+import com.example.alertless.database.repositories.ProfileRepository;
+import com.example.alertless.entities.relations.ProfileScheduleRelation;
 import com.example.alertless.enums.DatePickerType;
 import com.example.alertless.enums.ScheduleType;
-import com.example.alertless.database.repositories.ProfileRepository;
-import com.example.alertless.database.repositories.AdminRepository;
-import com.example.alertless.entities.relations.ProfileScheduleRelation;
 import com.example.alertless.exceptions.AlertlessDatabaseException;
 import com.example.alertless.models.DateRangeModel;
 import com.example.alertless.models.MultiRangeScheduleModel;
@@ -31,8 +32,8 @@ import com.example.alertless.models.Profile;
 import com.example.alertless.models.ScheduleModel;
 import com.example.alertless.models.TimeRangeModel;
 import com.example.alertless.models.WeekScheduleModel;
-import com.example.alertless.scheduler.WeekScheduleDatePicker;
 import com.example.alertless.scheduler.ScheduleTimePicker;
+import com.example.alertless.scheduler.WeekScheduleDatePicker;
 import com.example.alertless.utils.ActivityUtils;
 import com.example.alertless.utils.Constants;
 import com.example.alertless.utils.DateRangeUtils;
@@ -65,6 +66,8 @@ public class SchedulerActivity extends AppCompatActivity {
     private Map<DatePickerType, MultiRangeScheduleModel> multiRangeScheduleMap;
     private DatePickerType datePickerType;
     private Profile currentProfile;
+    private LinearLayout dailyTimeView;
+    private ImageView timeArrowIcon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +93,12 @@ public class SchedulerActivity extends AppCompatActivity {
         }
 
         initScheduleStates();
+
+        this.dailyTimeView = findViewById(R.id.daily_time_view);
+        this.dailyTimeView.setVisibility(View.GONE);
+
+        this.timeArrowIcon = findViewById(R.id.time_schedule_arrow_icon);
+        this.timeArrowIcon.setImageResource(R.drawable.ic_arrow_right_black_24dp);
     }
 
     @Override
@@ -402,5 +411,18 @@ public class SchedulerActivity extends AppCompatActivity {
 
     private void setCurrentSchedule(ScheduleModel scheduleModel) {
         this.currentProfile.setSchedule(scheduleModel);
+    }
+
+    public void toggleTimeButtons(View v) {
+
+        if (this.dailyTimeView.isShown()) {
+            this.timeArrowIcon.setImageResource(R.drawable.ic_arrow_right_black_24dp);
+            this.dailyTimeView.setVisibility(View.GONE);
+
+        } else {
+            this.timeArrowIcon.setImageResource(R.drawable.ic_arrow_down_black_24dp);
+            this.dailyTimeView.setVisibility(View.VISIBLE);
+
+        }
     }
 }

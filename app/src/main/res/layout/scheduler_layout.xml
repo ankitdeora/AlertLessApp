@@ -4,14 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:weightSum="2">
-
-    <LinearLayout
-        android:id="@+id/radioScheduleLayout"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1">
+    android:weightSum="12">
 
         <View
             android:layout_width="match_parent"
@@ -21,11 +14,13 @@
         <TextView
             android:id="@+id/day_schedule_heading"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:background="@color/itemHighlightColor"
-            android:gravity="center"
-            android:padding="10dp"
+            android:gravity="center_vertical"
             android:text="Day Schedule"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
             android:textColor="@android:color/secondary_text_light"
             android:textSize="24sp" />
 
@@ -37,26 +32,45 @@
         <RadioGroup
             android:id="@+id/scheduleRadioGroup"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:weightSum="6"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:checkedButton="@id/radio_week"
-            android:padding="10dp">
+            android:checkedButton="@id/radio_week">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
 
             <RadioButton
                 android:id="@+id/radio_week"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:onClick="onWeekRadioSelection"
-                android:layout_weight="0.5"
+                android:gravity="center_vertical"
+                android:layout_weight="1.5"
                 android:text="By Week" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
 
             <RadioButton
                 android:id="@+id/radio_date"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:gravity="center_vertical"
                 android:onClick="onDateRadioSelection"
-                android:layout_weight="0.5"
+                android:layout_weight="1.5"
                 android:text="By Date" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
 
         </RadioGroup>
 
@@ -68,83 +82,112 @@
         <LinearLayout
             android:id="@+id/scheduleSwitchLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="3"
             android:orientation="vertical">
 
             <include
                 layout="@layout/week_layout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="match_parent" />
 
         </LinearLayout>
 
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/timeScheduleLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/cardview_shadow_start_color" />
 
-        <TextView
-            android:id="@+id/time_schedule_heading"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:background="@color/itemHighlightColor"
-            android:gravity="center"
-            android:padding="10dp"
-            android:text="Time Schedule"
-            android:textColor="@android:color/secondary_text_light"
-            android:textSize="24sp" />
+            android:orientation="horizontal"
+            android:weightSum="6"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:onClick="toggleTimeButtons">
+
+            <TextView
+                android:id="@+id/time_schedule_heading"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="5"
+                android:gravity="center_vertical"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:text="Time Schedule"
+                android:textColor="@android:color/secondary_text_light"
+                android:textSize="24sp" />
+
+            <ImageView
+                android:id="@+id/time_schedule_arrow_icon"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="10dp"
+                android:layout_gravity="center"
+                app:srcCompat="@drawable/ic_arrow_down_black_24dp" />
+
+        </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/cardview_shadow_start_color" />
 
-        <TextView
-            android:id="@+id/startDailyTime"
+        <LinearLayout
+            android:id="@+id/daily_time_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:foreground="?android:attr/selectableItemBackground"
-            android:gravity="center_vertical"
-            android:onClick="showStartTimePickerDialog"
-            android:padding="20dp"
-            android:text="Start Time"
-            android:textSize="18sp" />
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            android:weightSum="2"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/startDailyTime"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:onClick="showStartTimePickerDialog"
+                android:paddingStart="20dp"
+                android:text="Start Time"
+                android:textSize="18sp" />
 
 
-        <TextView
-            android:id="@+id/endDailyTime"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:foreground="?android:attr/selectableItemBackground"
-            android:gravity="center_vertical"
-            android:onClick="showEndTimePickerDialog"
-            android:padding="20dp"
-            android:text="End Time"
-            android:textSize="18sp" />
+            <TextView
+                android:id="@+id/endDailyTime"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:onClick="showEndTimePickerDialog"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:text="End Time"
+                android:textSize="18sp" />
+
+        </LinearLayout>
 
         <TextView
             android:id="@+id/showData"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:foreground="?android:attr/selectableItemBackground"
             android:gravity="center_vertical"
             android:onClick="showTimeRange"
-            android:padding="20dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:layout_weight="1"
             android:text="Log Data"
             android:textSize="18sp" />
-
-
-    </LinearLayout>
-
-
 
 </LinearLayout>
