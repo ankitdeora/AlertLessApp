@@ -7,21 +7,19 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.alertless.R;
 import com.example.alertless.database.repositories.ProfileRepository;
-import com.example.alertless.enums.ButtonState;
 import com.example.alertless.exceptions.AlertlessDatabaseException;
 import com.example.alertless.exceptions.AlertlessException;
 import com.example.alertless.models.AppDetailsModel;
@@ -54,6 +52,8 @@ public class ProfileEditActivity extends AppCompatActivity {
     // current state
     private Profile currentProfile;
     private ProfileRepository profileRepository = ProfileRepository.getInstance(getApplication());
+    private RecyclerView recyclerView;
+    private ImageView appsArrowIcon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +65,10 @@ public class ProfileEditActivity extends AppCompatActivity {
         } catch (AlertlessDatabaseException e) {
             ActivityUtils.finishActivityWithErr(Constants.APP_SELECTOR_ERROR, e.getMessage(), this);
         }
+
+        this.recyclerView.setVisibility(View.GONE);
+        this.appsArrowIcon = findViewById(R.id.apps_arrow_icon);
+        this.appsArrowIcon.setImageResource(R.drawable.ic_arrow_right_black_24dp);
     }
 
     private void initStates(Bundle savedInstanceState) throws AlertlessDatabaseException {
@@ -107,7 +111,7 @@ public class ProfileEditActivity extends AppCompatActivity {
 
     private SilentAppListAdapter getSilentAppListAdapter(String profileName) {
 
-        RecyclerView recyclerView = findViewById(R.id.silentOnlyAppRecyclerview);
+        recyclerView = findViewById(R.id.silentOnlyAppRecyclerview);
         final SilentAppListAdapter adapter = new SilentAppListAdapter(this, getApplication(), profileName);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -227,5 +231,17 @@ public class ProfileEditActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    public void toggleApps(View view) {
+
+        if (this.recyclerView.isShown()) {
+            this.appsArrowIcon.setImageResource(R.drawable.ic_arrow_right_black_24dp);
+            this.recyclerView.setVisibility(View.GONE);
+        } else {
+            this.appsArrowIcon.setImageResource(R.drawable.ic_arrow_down_black_24dp);
+            this.recyclerView.setVisibility(View.VISIBLE);
+        }
+
     }
 }

@@ -131,7 +131,6 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:padding="10dp"
-                android:layout_gravity="center"
                 app:srcCompat="@drawable/ic_arrow_down_black_24dp" />
 
         </LinearLayout>
