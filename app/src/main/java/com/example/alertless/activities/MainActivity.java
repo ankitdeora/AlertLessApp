@@ -1,9 +1,12 @@
 package com.example.alertless.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -68,11 +71,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void createProfile(View view) {
-        final EditText input = new EditText(this);
-        AlertDialog dialog = AlertDialogUtils.getTextDialog("Add Profile Name !!!",this, input);
+        AlertDialog dialog = AlertDialogUtils.getProfileNameDialog("Add Profile Name !!!",this);
+
+        final EditText input = dialog.findViewById(R.id.profile_name_edit_text);
 
         //Overriding the handler immediately after show for text validations and existing profile validations
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            AlertDialogUtils.closeKeyboard(this);
 
             String profileNameInDialog = input.getText().toString();
 
@@ -107,6 +112,11 @@ public class MainActivity extends AppCompatActivity {
                     ToastUtils.showToast(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG);
                 }
             }
+        });
+
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(v -> {
+            AlertDialogUtils.closeKeyboard(this);
+            dialog.cancel();
         });
     }
 

@@ -1,61 +1,75 @@
 package com.example.alertless.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.text.InputType;
-import android.view.View;
-import android.view.WindowManager;
+import android.view.LayoutInflater;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import androidx.appcompat.app.AlertDialog;
 
+import com.example.alertless.R;
+import com.example.alertless.exceptions.AlertlessRuntimeException;
+
 public class AlertDialogUtils {
 
-    public static AlertDialog getTextDialog(String title, Context context, EditText input, String defaultInput) {
+    public static AlertDialog getProfileNameDialog(String title, Context context) {
+        return getProfileNameDialog(title, context, null);
+    }
+
+    public static AlertDialog getProfileNameDialog(String title, Context context, String defaultInput) {
+
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle(title);
 
-        // Set up the input
-        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        LayoutInflater layoutInflater = ((Activity) context).getLayoutInflater();
 
-        input.setOnFocusChangeListener((v, hasFocus) -> input.post(() -> {
-            InputMethodManager inputMethodManager= (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-            inputMethodManager.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT);
-        }));
+        builder.setTitle(title)
+                .setView(layoutInflater.inflate(R.layout.dialog_profile_name, null))
+                .setPositiveButton("OK", (dialog, which) -> {
+                    //Do nothing here because we override this button later to change the close behaviour.
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        final EditText input = dialog.findViewById(R.id.profile_name_edit_text);
+        if (input == null) {
+            throw new AlertlessRuntimeException("Could not find EditText input for ProfileName edit dialog !!!");
+        }
 
         if (StringUtils.isNotBlank(defaultInput)) {
             input.setText(defaultInput);
             input.setSelectAllOnFocus(true);
         }
 
-        builder.setView(input);
-
-        builder.setPositiveButton("OK", (dialog, which) -> {
-            //Do nothing here because we override this button later to change the close behaviour.
-        });
-
-        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
-
-        AlertDialog dialog = builder.create();
-        dialog.setView(input, 60, 50, 120, 10);
-
-        // show dialog
-        dialog.show();
-
-        // change layout size
-        int width = (int)(context.getResources().getDisplayMetrics().widthPixels * 0.83);
-        int height = (int)(context.getResources().getDisplayMetrics().heightPixels * 0.27);
-        dialog.getWindow().setLayout(width, height);
-
-//        dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-
-        // request focus in edit text
-        input.requestFocus();
+        setUpInput(input, context);
 
         return dialog;
     }
 
-    public static AlertDialog getTextDialog(String title, Context context, EditText input) {
-        return getTextDialog(title, context, input, null);
+    private static void setUpInput(EditText input, Context context) {
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+
+        input.setOnFocusChangeListener((v, hasFocus) -> input.post(() -> {
+            if (hasFocus) {
+                showKeyboard(context);
+            } else {
+                closeKeyboard(context);
+            }
+        }));
+
+        input.requestFocus();
+    }
+
+    public static void showKeyboard(Context context){
+        InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+    }
+
+    public static void closeKeyboard(Context context){
+        InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
     }
 }

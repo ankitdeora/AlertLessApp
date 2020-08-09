@@ -197,11 +197,13 @@ public class ProfileEditActivity extends AppCompatActivity {
     }
 
     public void editProfileName(View view) {
-        final EditText input = new EditText(this);
-        AlertDialog dialog = AlertDialogUtils.getTextDialog("Update Profile Name !!!", this, input, currentProfile.getDetails().getName());
+        AlertDialog dialog = AlertDialogUtils.getProfileNameDialog("Update Profile Name !!!",this, currentProfile.getDetails().getName());
+
+        final EditText input = dialog.findViewById(R.id.profile_name_edit_text);
 
         //Overriding the handler immediately after show for text validations and existing profile validations
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            AlertDialogUtils.closeKeyboard(this);
 
             String profileNameInDialog = input.getText().toString();
 
@@ -230,6 +232,11 @@ public class ProfileEditActivity extends AppCompatActivity {
                     ToastUtils.showToast(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG);
                 }
             }
+        });
+
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(v -> {
+            AlertDialogUtils.closeKeyboard(this);
+            dialog.cancel();
         });
     }
 
