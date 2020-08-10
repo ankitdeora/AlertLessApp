@@ -1,18 +1,53 @@
 package com.example.alertless.utils;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.provider.Settings;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
-import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.example.alertless.R;
 import com.example.alertless.exceptions.AlertlessRuntimeException;
 
 public class AlertDialogUtils {
+
+    public static void requestNotificationPermissionsDialog(Context context) {
+
+        if (!NotificationManagerCompat.getEnabledListenerPackages(context).contains(context.getPackageName())) {
+            showNotificationDialog(context);
+        }
+    }
+
+    public static String getApplicationName(Context context) {
+        ApplicationInfo applicationInfo = context.getApplicationInfo();
+        int stringId = applicationInfo.labelRes;
+        return stringId == 0 ? applicationInfo.nonLocalizedLabel.toString() : context.getString(stringId);
+    }
+
+    private static void showNotificationDialog(Context context) {
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(context);
+        alertBuilder.setCancelable(true);
+        alertBuilder.setTitle("Grant Notification Permission !!!");
+        alertBuilder.setMessage(String.format("Notification access permission is necessary for %s Application to work.", getApplicationName(context)));
+        alertBuilder.setPositiveButton("ALLOW", (dialog, which) -> {
+            context.startActivity(new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            dialog.dismiss();
+        });
+        alertBuilder.setNegativeButton("DENY", (dialog, which) -> {
+            ((Activity)context).finish();
+            dialog.cancel();
+        });
+
+        AlertDialog alert = alertBuilder.create();
+        alert.show();
+    }
 
     public static AlertDialog getProfileNameDialog(String title, Context context) {
         return getProfileNameDialog(title, context, null);
