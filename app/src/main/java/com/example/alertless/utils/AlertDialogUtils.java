@@ -12,8 +12,10 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import androidx.core.app.NotificationManagerCompat;
+import androidx.fragment.app.FragmentActivity;
 
 import com.example.alertless.R;
+import com.example.alertless.activities.Activities;
 import com.example.alertless.exceptions.AlertlessRuntimeException;
 
 public class AlertDialogUtils {
@@ -37,7 +39,9 @@ public class AlertDialogUtils {
         alertBuilder.setTitle("Grant Notification Permission !!!");
         alertBuilder.setMessage(String.format("Notification access permission is necessary for %s Application to work.", getApplicationName(context)));
         alertBuilder.setPositiveButton("ALLOW", (dialog, which) -> {
-            context.startActivity(new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            Intent notificationAccessSettingsIntent = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
+
+            ((FragmentActivity)context).startActivityForResult(notificationAccessSettingsIntent, Activities.NOTIFICATION_ACCESS_SETTINGS.getValue());
             dialog.dismiss();
         });
         alertBuilder.setNegativeButton("DENY", (dialog, which) -> {

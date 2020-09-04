@@ -38,9 +38,6 @@ import java.util.function.Supplier;
 public class ProfileEditActivity extends AppCompatActivity {
     private static final String TAG = ProfileEditActivity.class.getName() + Constants.TAG_SUFFIX;
 
-    public static final int LAUNCH_SCHEDULER_ACTIVITY = 1;
-    public static final int LAUNCH_APP_SELECTOR_ACTIVITY = 2;
-
     public static final String SCHEDULER_SUCCESS_TOAST = "Scheduler Result : %s";
     public static final String SCHEDULER_CANCELLED_TOAST = "Scheduler Activity Cancelled due to error : %s";
 
@@ -153,11 +150,11 @@ public class ProfileEditActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == LAUNCH_SCHEDULER_ACTIVITY) {
+        if (requestCode == Activities.SCHEDULER_ACTIVITY.getValue()) {
             Supplier<ScheduleModel> scheduleSupplier = () -> (ScheduleModel) data.getSerializableExtra(Constants.SCHEDULE_RESULT);
             handleActivityResult(resultCode, data, scheduleSupplier, SCHEDULER_SUCCESS_TOAST, Constants.SCHEDULE_ERROR, SCHEDULER_CANCELLED_TOAST);
 
-        } else if (requestCode == LAUNCH_APP_SELECTOR_ACTIVITY) {
+        } else if (requestCode == Activities.APP_SELECTOR_ACTIVITY.getValue()) {
 
             Supplier<List<AppDetailsModel>> appsSupplier = () -> (List) data.getSerializableExtra(Constants.APP_SELECTOR_RESULT);
             handleActivityResult(resultCode, data, appsSupplier, APP_SELECTOR_SUCCESS_TOAST, Constants.APP_SELECTOR_ERROR, APP_SELECTOR_CANCELLED_TOAST);
@@ -183,13 +180,13 @@ public class ProfileEditActivity extends AppCompatActivity {
     public void schedule(View view) {
         Intent intent = new Intent(this, SchedulerActivity.class);
         intent.putExtra(Constants.CURRENT_PROFILE, currentProfile);
-        startActivityForResult(intent, LAUNCH_SCHEDULER_ACTIVITY);
+        startActivityForResult(intent, Activities.SCHEDULER_ACTIVITY.getValue());
     }
 
     public void silentMoreApps(View view) {
         Intent intent = new Intent(this, AppSelectorActivity.class);
         intent.putExtra(Constants.CURRENT_PROFILE, currentProfile);
-        startActivityForResult(intent, LAUNCH_APP_SELECTOR_ACTIVITY);
+        startActivityForResult(intent, Activities.APP_SELECTOR_ACTIVITY.getValue());
     }
 
     public void doneWithProfileEdit() {
